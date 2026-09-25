@@ -96,7 +96,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
         scrollView.hasHorizontalScroller = NO;
         scrollView.autohidesScrollers = YES;
         scrollView.drawsBackground = YES;
-        scrollView.backgroundColor = [NSColor controlBackgroundColor];
+        scrollView.backgroundColor = CrimsonAppearance.controlSurface;
 
         CollectionView *collectionView = [[CollectionView alloc] initWithFrame:NSMakeRect(0, 0, 450, 300)];
         collectionView.selectable = YES;
@@ -108,7 +108,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
         layout.itemSize = NSMakeSize(96.0, 144.0);
         layout.sectionInset = NSEdgeInsetsMake(28.0, 16.0, 28.0, 16.0);
         collectionView.collectionViewLayout = layout;
-        collectionView.backgroundColors = @[[NSColor controlBackgroundColor]];
+        collectionView.backgroundColors = @[CrimsonAppearance.controlSurface];
 
         scrollView.documentView = collectionView;
         [rootView addSubview:scrollView];
@@ -126,6 +126,9 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    self.collectionView.backgroundColors = @[CrimsonAppearance.controlSurface];
+    self.collectionView.enclosingScrollView.backgroundColor = CrimsonAppearance.controlSurface;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshCrimsonAppearance:) name:@"MoonlightThemeDidChange" object:nil];
     
     self.collectionView.dataSource = self;
     [self.collectionView registerNib:[[NSNib alloc] initWithNibNamed:@"AppCell" bundle:nil] forItemWithIdentifier:@"AppCell"];
@@ -157,6 +160,12 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
                 usingBlock:^(NSNotification *note) {
         [weakSelf handleStreamingStateChange:note];
     }];
+}
+
+- (void)refreshCrimsonAppearance:(NSNotification *)notification {
+    self.collectionView.backgroundColors = @[CrimsonAppearance.controlSurface];
+    self.collectionView.enclosingScrollView.backgroundColor = CrimsonAppearance.controlSurface;
+    [self.collectionView reloadData];
 }
 
 - (void)dealloc {

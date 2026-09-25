@@ -16,7 +16,7 @@ import SwiftUI
 
         // Let's create a wrapper view that manages the binding
         let wrapper = HostSidebarWrapper(initialUUID: selectedHostUUID, initialHost: initialHost, initialHosts: initialHosts, onHostSelected: onHostSelected)
-        return NSHostingController(rootView: wrapper)
+        return NSHostingController(rootView: wrapper.modifier(AppAppearance()))
     }
 }
 

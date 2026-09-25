@@ -514,7 +514,7 @@ private struct ShortcutReferenceCard: View {
       .frame(maxWidth: .infinity, alignment: .leading)
       .background(
         RoundedRectangle(cornerRadius: 12, style: .continuous)
-          .fill(Color(NSColor.controlBackgroundColor))
+          .fill(Color(nsColor: CrimsonAppearance.controlSurface))
       )
       .overlay(
         RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -690,7 +690,7 @@ struct KeyboardTranslationRulesView: View {
 
       if settingsModel.keyboardTranslationRules.isEmpty {
         RoundedRectangle(cornerRadius: 12, style: .continuous)
-          .fill(Color(NSColor.controlBackgroundColor))
+          .fill(Color(nsColor: CrimsonAppearance.controlSurface))
           .overlay(
             VStack(alignment: .leading, spacing: 8) {
               Text(languageManager.localize("No Shortcut Translation Rules"))
@@ -770,7 +770,7 @@ private struct KeyboardTranslationRuleCard: View {
     .frame(maxWidth: .infinity, alignment: .leading)
     .background(
       RoundedRectangle(cornerRadius: 12, style: .continuous)
-        .fill(Color(NSColor.controlBackgroundColor))
+        .fill(Color(nsColor: CrimsonAppearance.controlSurface))
     )
     .overlay(
       RoundedRectangle(cornerRadius: 12, style: .continuous)
@@ -935,7 +935,7 @@ private struct KeyboardTranslationRuleEditorSheet: View {
         .padding(12)
         .background(
           RoundedRectangle(cornerRadius: 10, style: .continuous)
-            .fill(Color(NSColor.controlBackgroundColor))
+            .fill(Color(nsColor: CrimsonAppearance.controlSurface))
         )
         .overlay(
           RoundedRectangle(cornerRadius: 10, style: .continuous)

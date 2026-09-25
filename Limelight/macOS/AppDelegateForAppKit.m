@@ -26,6 +26,7 @@ typedef enum : NSUInteger {
     SystemTheme,
     LightTheme,
     DarkTheme,
+    CrimsonTheme,
 } Theme;
 
 @interface AppDelegateForAppKit () <NSApplicationDelegate, NSWindowDelegate>
@@ -34,6 +35,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) NSWindowController *welcomePermissionsWC;
 @property (nonatomic, strong) ControllerNavigation *controllerNavigation;
 @property (weak) IBOutlet NSMenuItem *themeMenuItem;
+@property (nonatomic, strong) NSWindowController *hostStatsWC;
 @end
 
 @implementation AppDelegateForAppKit
@@ -83,6 +85,11 @@ static const void *MoonlightOriginalToolbarToolTipKey = &MoonlightOriginalToolba
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
+    NSMenuItem *statsItem = [[NSMenuItem alloc] initWithTitle:@"VibePollo Host Stats" action:@selector(showHostStats:) keyEquivalent:@"h"];
+    statsItem.keyEquivalentModifierMask = NSEventModifierFlagCommand | NSEventModifierFlagShift;
+    statsItem.target = self;
+    NSMenu *windowMenu = NSApp.windowsMenu ?: [[NSApp.mainMenu itemWithTag:4000] submenu];
+    [windowMenu addItem:statsItem];
     [self createMainWindow];
     
     self.controllerNavigation = [[ControllerNavigation alloc] init];
@@ -94,7 +101,12 @@ static const void *MoonlightOriginalToolbarToolTipKey = &MoonlightOriginalToolba
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(languageChanged:) name:@"LanguageChanged" object:nil];
     [[LanguageManager shared] applyAppLanguage];
 
+    NSMenu *appearanceMenu = self.themeMenuItem.submenu;
+    NSMenuItem *crimsonItem = [[NSMenuItem alloc] initWithTitle:@"Black & Crimson" action:@selector(setCrimsonTheme:) keyEquivalent:@""];
+    crimsonItem.target = self;
+    [appearanceMenu addItem:crimsonItem];
     [self applyThemePreference:[self currentThemePreference]];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(windowDidBecomeKey:) name:NSWindowDidBecomeKeyNotification object:nil];
 }
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)sender hasVisibleWindows:(BOOL)flag {
@@ -213,18 +225,43 @@ static const void *MoonlightOriginalToolbarToolTipKey = &MoonlightOriginalToolba
     [self changeTheme:DarkTheme withMenuItem:((NSMenuItem *)sender)];
 }
 
+- (IBAction)setCrimsonTheme:(id)sender {
+    [self changeTheme:CrimsonTheme withMenuItem:((NSMenuItem *)sender)];
+}
+
+- (IBAction)showHostStats:(id)sender {
+    if (self.hostStatsWC == nil) {
+        self.hostStatsWC = [HostStatsWindowFactory makeWindow];
+    }
+    [self.hostStatsWC showWindow:self];
+    [self.hostStatsWC.window makeKeyAndOrderFront:self];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)notification {
+    if ([self currentThemePreference] == CrimsonTheme) {
+        [self applyCrimsonToWindow:notification.object];
+    }
+}
+
+- (void)applyCrimsonToWindow:(NSWindow *)window {
+    if (![window isKindOfClass:NSWindow.class]) return;
+    window.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+    window.backgroundColor = [NSColor colorWithCalibratedRed:0.035 green:0.024 blue:0.031 alpha:1.0];
+    window.titlebarAppearsTransparent = YES;
+}
+
 - (NSInteger)currentThemePreference {
     return [[NSUserDefaults standardUserDefaults] integerForKey:@"theme"];
 }
 
 - (void)applyThemePreference:(NSInteger)theme {
-    Theme resolvedTheme = (theme >= SystemTheme && theme <= DarkTheme) ? (Theme)theme : SystemTheme;
+    Theme resolvedTheme = (theme >= SystemTheme && theme <= CrimsonTheme) ? (Theme)theme : SystemTheme;
     [self changeTheme:resolvedTheme withMenuItem:[self menuItemForTheme:resolvedTheme forMenu:self.themeMenuItem.submenu]];
 }
 
 - (NSMenuItem *)menuItemForTheme:(Theme)theme forMenu:(NSMenu *)menu {
-    static NSUInteger menuIndexes[] = {0, 2, 3};
-    if (menu == nil || theme > DarkTheme) {
+    static NSUInteger menuIndexes[] = {0, 2, 3, 4};
+    if (menu == nil || theme > CrimsonTheme) {
         return nil;
     }
     return menu.itemArray[menuIndexes[theme]];
@@ -254,7 +291,20 @@ static const void *MoonlightOriginalToolbarToolTipKey = &MoonlightOriginalToolba
         case DarkTheme:
             app.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
             break;
+        case CrimsonTheme:
+            app.appearance = [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+            break;
     }
+    for (NSWindow *window in app.windows) {
+        if (theme == CrimsonTheme) {
+            [self applyCrimsonToWindow:window];
+        } else {
+            window.appearance = nil;
+            window.backgroundColor = NSColor.windowBackgroundColor;
+            window.titlebarAppearsTransparent = NO;
+        }
+    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MoonlightThemeDidChange" object:nil];
 }
 
 - (void)languageChanged:(NSNotification *)notification {

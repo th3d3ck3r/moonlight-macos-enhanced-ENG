@@ -17,7 +17,7 @@ import SwiftUI
                                           connectionState: "Connected",
                                           onShowWindow: onShowWindow,
                                           onDisconnect: onDisconnect)
-        return NSHostingController(rootView: view)
+        return NSHostingController(rootView: view.modifier(AppAppearance()))
     }
 }
 
@@ -31,7 +31,7 @@ import SwiftUI
                                         onWake: onWake,
                                         onRefresh: onRefresh,
                                         onCancel: onCancel)
-        return NSHostingController(rootView: view)
+        return NSHostingController(rootView: view.modifier(AppAppearance()))
     }
 }
 

@@ -222,7 +222,7 @@ final class CardView: NSView {
         wantsLayer = true
         layer?.cornerRadius = 10
         layer?.masksToBounds = true
-        layer?.backgroundColor = NSColor.controlBackgroundColor.withAlphaComponent(0.55).cgColor
+        layer?.backgroundColor = CrimsonAppearance.controlSurface.withAlphaComponent(0.55).cgColor
     }
 
     required init?(coder: NSCoder) {

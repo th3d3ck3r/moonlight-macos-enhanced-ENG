@@ -60,6 +60,7 @@ enum SettingsPaneType: Int, CaseIterable {
   }
 
   var color: Color {
+    if CrimsonAppearance.isEnabled { return Color(nsColor: CrimsonAppearance.accent) }
     switch self {
     case .stream:
       return .blue

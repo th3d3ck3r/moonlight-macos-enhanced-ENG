@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches: [master, main]
+    branches: [master, main, codex/crimson-vibepollo-stats]
     tags:
       - 'v*'
   pull_request:
@@ -110,19 +110,20 @@ jobs:
     - name: Create ${{ matrix.variant }} DMG
       run: |
         brew install create-dmg || true
+        cp -R "dist/app/Moonlight.app" "dist/app/moonmac-vibe.app"
 
         create-dmg \
-          --volname "Moonlight macOS Enhanced (${{ matrix.variant }})" \
-          --volicon "dist/app/Moonlight.app/Contents/Resources/AppIcon.icns" \
+          --volname "moonmac-vibe (${{ matrix.variant }})" \
+          --volicon "dist/app/moonmac-vibe.app/Contents/Resources/AppIcon.icns" \
           --window-pos 200 120 \
           --window-size 600 400 \
           --icon-size 100 \
-          --icon "Moonlight.app" 150 185 \
-          --hide-extension "Moonlight.app" \
+          --icon "moonmac-vibe.app" 150 185 \
+          --hide-extension "moonmac-vibe.app" \
           --app-drop-link 450 185 \
-          "dist/Moonlight-macOS-Enhanced-${{ matrix.variant }}.dmg" \
-          "dist/app/Moonlight.app" || \
-        hdiutil create -volname "Moonlight-${{ matrix.variant }}" -srcfolder "dist/app/Moonlight.app" -ov -format UDZO "dist/Moonlight-macOS-Enhanced-${{ matrix.variant }}.dmg"
+          "dist/moonmac-vibe-${{ matrix.variant }}.dmg" \
+          "dist/app/moonmac-vibe.app" || \
+        hdiutil create -volname "moonmac-vibe-${{ matrix.variant }}" -srcfolder "dist/app/moonmac-vibe.app" -ov -format UDZO "dist/moonmac-vibe-${{ matrix.variant }}.dmg"
 
     - name: Upload ${{ matrix.variant }} app artifact
       uses: actions/upload-artifact@v7
@@ -134,8 +135,8 @@ jobs:
     - name: Upload ${{ matrix.variant }} DMG artifact
       uses: actions/upload-artifact@v7
       with:
-        name: Moonlight-macOS-dmg-${{ matrix.variant }}
-        path: dist/Moonlight-macOS-Enhanced-${{ matrix.variant }}.dmg
+        name: moonmac-vibe-dmg-${{ matrix.variant }}
+        path: dist/moonmac-vibe-${{ matrix.variant }}.dmg
         if-no-files-found: error
 
   build_universal:
@@ -263,25 +264,26 @@ jobs:
     - name: Create universal DMG
       run: |
         brew install create-dmg || true
+        cp -R "dist/universal/Moonlight.app" "dist/universal/moonmac-vibe.app"
 
         create-dmg \
-          --volname "Moonlight macOS Enhanced (universal)" \
-          --volicon "dist/universal/Moonlight.app/Contents/Resources/AppIcon.icns" \
+          --volname "moonmac-vibe (universal)" \
+          --volicon "dist/universal/moonmac-vibe.app/Contents/Resources/AppIcon.icns" \
           --window-pos 200 120 \
           --window-size 600 400 \
           --icon-size 100 \
-          --icon "Moonlight.app" 150 185 \
-          --hide-extension "Moonlight.app" \
+          --icon "moonmac-vibe.app" 150 185 \
+          --hide-extension "moonmac-vibe.app" \
           --app-drop-link 450 185 \
-          "dist/Moonlight-macOS-Enhanced-universal.dmg" \
-          "dist/universal/Moonlight.app" || \
-        hdiutil create -volname "Moonlight-universal" -srcfolder "dist/universal/Moonlight.app" -ov -format UDZO "dist/Moonlight-macOS-Enhanced-universal.dmg"
+          "dist/moonmac-vibe-universal.dmg" \
+          "dist/universal/moonmac-vibe.app" || \
+        hdiutil create -volname "moonmac-vibe-universal" -srcfolder "dist/universal/moonmac-vibe.app" -ov -format UDZO "dist/moonmac-vibe-universal.dmg"
 
     - name: Upload universal DMG artifact
       uses: actions/upload-artifact@v7
       with:
-        name: Moonlight-macOS-dmg-universal
-        path: dist/Moonlight-macOS-Enhanced-universal.dmg
+        name: moonmac-vibe-dmg-universal
+        path: dist/moonmac-vibe-universal.dmg
         if-no-files-found: error
 
   build:
@@ -325,19 +327,19 @@ jobs:
     - name: Download x86_64 DMG artifact
       uses: actions/download-artifact@v8
       with:
-        name: Moonlight-macOS-dmg-x86_64
+        name: moonmac-vibe-dmg-x86_64
         path: dist
 
     - name: Download arm64 DMG artifact
       uses: actions/download-artifact@v8
       with:
-        name: Moonlight-macOS-dmg-arm64
+        name: moonmac-vibe-dmg-arm64
         path: dist
 
     - name: Download universal DMG artifact
       uses: actions/download-artifact@v8
       with:
-        name: Moonlight-macOS-dmg-universal
+        name: moonmac-vibe-dmg-universal
         path: dist
 
     - name: Get Version
@@ -358,7 +360,44 @@ jobs:
         draft: false
         prerelease: ${{ contains(github.ref, 'beta') || contains(github.ref, 'alpha') }}
         files: |
-          dist/Moonlight-macOS-Enhanced-x86_64.dmg
-          dist/Moonlight-macOS-Enhanced-arm64.dmg
-          dist/Moonlight-macOS-Enhanced-universal.dmg
+          dist/moonmac-vibe-x86_64.dmg
+          dist/moonmac-vibe-arm64.dmg
+          dist/moonmac-vibe-universal.dmg
         body_path: release_body.md
+
+  publish_moonmac_vibe:
+    name: Publish moonmac-vibe v0.1.1
+    needs: [build_arch, build_universal, build]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/crimson-vibepollo-stats'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v6
+    - uses: actions/download-artifact@v8
+      with:
+        name: moonmac-vibe-dmg-x86_64
+        path: dist
+    - uses: actions/download-artifact@v8
+      with:
+        name: moonmac-vibe-dmg-arm64
+        path: dist
+    - uses: actions/download-artifact@v8
+      with:
+        name: moonmac-vibe-dmg-universal
+        path: dist
+    - name: Publish release after all three builds pass
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        if gh release view moonmac-vibe-v0.1.0 >/dev/null 2>&1; then
+          gh release edit moonmac-vibe-v0.1.0 --prerelease
+        fi
+        gh release create moonmac-vibe-v0.1.1 \
+          dist/moonmac-vibe-x86_64.dmg \
+          dist/moonmac-vibe-arm64.dmg \
+          dist/moonmac-vibe-universal.dmg \
+          --target "$GITHUB_SHA" \
+          --title 'moonmac-vibe v0.1.1' \
+          --latest \
+          --notes-file .github/release-notes/moonmac-vibe-v0.1.1.md

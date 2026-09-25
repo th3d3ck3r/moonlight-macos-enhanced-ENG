@@ -1,233 +1,67 @@
-# Moonlight macOS Enhanced
+# 🌙🖤 moonmac-vibe 🔴✨
 
-<div align="center">
+### Your Mac. Your VibePollo host. One crimson command center. 🎮📊
 
-[![Build](https://github.com/skyhua0224/moonlight-macos-enhanced/actions/workflows/build.yml/badge.svg)](https://github.com/skyhua0224/moonlight-macos-enhanced/actions/workflows/build.yml) [![Release](https://img.shields.io/github/v/release/skyhua0224/moonlight-macos-enhanced?include_prereleases)](https://github.com/skyhua0224/moonlight-macos-enhanced/releases) [![Downloads](https://img.shields.io/github/downloads/skyhua0224/moonlight-macos-enhanced/total)](https://github.com/skyhua0224/moonlight-macos-enhanced/releases) [![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-Native-orange.svg)]() [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE.txt)
+**moonmac-vibe** is a native macOS Moonlight streaming client built primarily for [VibePollo](https://github.com/Nonary/Vibepollo). It brings an app-wide **Black & Crimson** look, a live host stats window, five-minute graphs, an English-first interface, and the full streaming foundation of [Moonlight macOS Enhanced](https://github.com/skyhua0224/moonlight-macos-enhanced).
 
-**Moonlight macOS / Moonlight for macOS 原生增强版客户端**
+[**⬇️ Grab a release**](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [**📝 Changelog**](CHANGELOG.md) · [**🧰 Inherited feature guide**](README.en.md) · [**🙏 Credits**](ACKNOWLEDGEMENTS.md)
 
-`Moonlight macOS Enhanced` 是一个面向 Sunshine、Foundation Sunshine 与兼容 GameStream 主机的原生 macOS 串流客户端，使用 AppKit / SwiftUI 构建，并针对 Apple Silicon 与 Intel Mac 做了持续优化。
+## ✨ The good stuff
 
-简体中文 | [English](README.en.md)
+| | Feature | What it does |
+| --- | --- | --- |
+| 🎨 | **Black & Crimson everywhere** | Styles the host browser, settings, streaming controls and stats window. Choose **Settings → App → Appearance → Black & Crimson** or **View → Appearance → Black & Crimson**. Your choice persists. |
+| 🗣️ | **English-first UI** | English is the default on new installs, including stream menus, connection editing, diagnostics and log labels. An existing language preference still takes precedence. |
+| 🖥️ | **VibePollo host health** | Open **Window → VibePollo Host Stats** (⇧⌘H) for CPU, GPU, encoder, memory, temperature and network measurements the host exposes. Missing sensors show N/A. |
+| 📈 | **Five-minute graphs** | About 150 samples at roughly two-second intervals while the window is open; see host trends and, while streaming to the selected host, client FPS and network loss. |
+| 🚀 | **Streaming telemetry** | Client FPS, loss, jitter, video bitrate, decode and render time appear beside host measurements during the matching stream. |
+| 🎮 | **Full streaming foundation** | Native AppKit/SwiftUI client with Intel and Apple Silicon builds, pairing, VideoToolbox/Metal renderers, H.264/HEVC/AV1 negotiation, HDR, audio, input, controller and connectivity settings inherited from upstream. Host support controls what is available. |
 
-</div>
+Host stats use VibePollo's Web UI API, separate from the GameStream connection. **You can stream without setting up a stats token.** 💡
 
----
+## 📦 Download & launch
 
-## ✨ 核心特性
+1. Head to [**Releases**](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases). For an Intel Mac choose `moonmac-vibe-x86_64.dmg` 🧱; for Apple Silicon choose `moonmac-vibe-arm64.dmg` 🍎; or grab `moonmac-vibe-universal.dmg` for either.
+2. Open the DMG and drag **`moonmac-vibe.app`** into Applications.
+3. Launch the app, add your VibePollo host and pair with the PIN displayed by the client. 🎯
+4. If macOS blocks this unsigned, unnotarized community build, right-click the app and select **Open**, or use **System Settings → Privacy & Security → Open Anyway**. After verifying your download, if it is still blocked, run `xattr -dr com.apple.quarantine /Applications/moonmac-vibe.app` in Terminal.
 
-- **原生 macOS 客户端** — AppKit / SwiftUI 界面、Apple Silicon / Intel 双支持、深色模式与双语界面
-- **完整串流能力** — 自定义分辨率与帧率、AV1 / HEVC / H.264 解码、HDR、YUV 4:4:4、MetalFX / VT 增强与自动码率
-- **多渲染链路** — 提供 `原生渲染器`、`Metal 渲染器` 与 `兼容渲染器`；`原生渲染器` 为默认推荐选项，`Metal 渲染器` 提供更深的 HDR / 色彩调节
-- **剪贴板支持** — 配合 Foundation Sunshine，支持文本与单张图片的双向复制粘贴，并按串流窗口焦点自动接管当前会话
-- **输入与控制增强** — 支持以 `CoreHID` 为核心的低延迟、高回报率鼠标输入链路，带来更直接、更细腻的相对移动响应；自由鼠标模式可无缝切换到其他屏幕继续操作，锁定鼠标模式更适合游戏与持续相对移动场景，并提供可自定义串流快捷键与手柄增强
-- **视音频体验升级** — 采用更低延迟的 `Core Audio` 本地播放链路，支持多通道接收与播放，以及客户端侧音效增强、EQ 调节与麦克风链路增强
-- **连接与稳定性** — 每台主机独立连接方式、自定义端口 / IPv6 / 域名、性能浮窗、诊断日志、AWDL 稳定性辅助
+The project targets macOS 12 or later, including an Intel build intended for macOS 15. GitHub Actions compiles the release and checks the architecture of the app and its bundled helper. Physical Mac playback and VibePollo integration still need hands-on testing.
 
-<details>
-<summary><strong>视频 / HDR / 渲染链路</strong></summary>
+## 📊 Plug in VibePollo stats
 
-- 视频协商覆盖 `AV1 / HEVC / H.264`、HDR、YUV `4:4:4`、远端分辨率 / FPS 覆盖与自动码率调节
-- 提供 `原生渲染器`、`Metal 渲染器` 与 `兼容渲染器` 三种视频播放链路
-- `原生渲染器` 使用 `VideoToolbox 解码 + 原生 Sample Buffer 呈现`，作为默认推荐选择，主打更低延迟、更高默认色准与稳定 HDR 播放体验
-- `Metal 渲染器` 使用更深的 `Metal / EDR` 呈现链路，提供 `HLG / PQ`、HDR 元数据来源、本机显示器 HDR 档案、亮度参数、光学输出倍率、HLG 观看环境、EDR 策略、色调映射策略等专业调节
-- `Metal 渲染器` 同时提供显示同步、帧队列目标、响应倾向与 drawable timeout 等呈现时序调节项
-- `兼容渲染器` 保留旧视频链路，用于旧系统、兼容性问题或异常恢复场景
-- 画质增强链路可按能力与场景使用 `VT 低延迟超分`、`VT 高质量超分`、`MetalFX`、`基础缩放` 与 `VT 低延迟插帧`，并在不可用时自动回退
+1. Enable the VibePollo Web UI and make its **HTTPS** address reachable from your Mac. Its usual HTTPS port is `47990`.
+2. In VibePollo's Web UI, create an API token scoped only to **GET `/api/host/stats`**. This is a metrics token, separate from streaming pairing. 🔑
+3. In moonmac-vibe choose **Window → VibePollo Host Stats** (⇧⌘H). Enter an address such as `192.168.1.10` or `https://192.168.1.10:47990`, paste the token and click **Save Token**. The token lives in your macOS Keychain.
+4. If VibePollo uses a self-signed HTTPS certificate, compare the SHA-256 fingerprint shown in the app against the certificate on your host **before** trusting it. A changed certificate needs fresh approval. 🔐
+5. Start streaming to that host. Host measurements and client stream metrics now share the window. 📉📈
 
-</details>
+**What if it looks empty?** Check that the Web UI is reachable, the token allows `GET /api/host/stats`, and the selected address matches the streaming host. A 401/403 means VibePollo rejected the token. Missing sensors display N/A. Polling is roughly every two seconds while the stats window is visible; network delays can change the timing. The token is sent only over HTTPS and is never forwarded on redirects.
 
-<details>
-<summary><strong>音频 / 麦克风链路</strong></summary>
+## 🧩 Compatibility & honest limits
 
-- 默认播放路径已经升级为更贴近 `Core Audio` 的低延迟本地播放链路，在保证稳定性的同时减少额外缓冲与不必要搬运
-- 支持接收主机侧 `Opus multistream` 音频，并完成 `2ch / 5.1 / 7.1 / 7.1.4` 的本地解码、协商与播放
-- 当输出设备本身支持多通道时，优先保留真实多通道语义；在耳机与 `2.0 / 2.1` 音箱上可切换 `音效增强`，由客户端侧完成更适合立体声设备的重渲染
-- `音效增强` 提供预设、EQ、空间感、音场与其他听感调节，适合耳机和立体声设备按偏好做本地优化
-- 配合支持相关能力的 Foundation Sunshine，可使用更完整的多通道协商、麦克风 uplink 与相关增强链路
+**VibePollo is the main intended host.** Standard Sunshine and compatible GameStream hosts can still use the streaming client; VibePollo's host graphs require its own stats API. Some inherited microphone, clipboard, HDR and audio paths depend on host support. See the [detailed upstream feature guide](README.en.md) for those options. You do not need Foundation Sunshine to display VibePollo metrics.
 
-</details>
+Finder shows **`moonmac-vibe.app`** and macOS displays **MoonMac Vibe**. The internal `Moonlight` executable and upstream bundle identifiers are retained for integration with the bundled helper. Release builds are unsigned and not notarized by Apple.
 
-<details>
-<summary><strong>主机协作 / 输入 / 诊断</strong></summary>
+## 🛠️ Want to build it yourself?
 
-- 鼠标输入围绕 `CoreHID` 低延迟、高回报率链路构建，让相对移动更直接、更跟手，也更适合追求灵敏度与持续操控的场景
-- `自由鼠标` 模式更适合远控、桌面应用与多屏环境，可无缝切换到其他显示器继续操作；`锁定鼠标` 模式更适合游戏、FPS 与需要持续相对移动的场景
-- 输入链路覆盖 `自由鼠标 / 锁定鼠标`、键盘与快捷键翻译、物理滚轮 / 平滑滚轮 / 触控板分流策略、多手柄、震动、Guide 模拟与手柄鼠标
-- 可向 Foundation Sunshine 发送主机显示扩展参数，并在开始串流时或主机设置中选择串流显示器、串流模式、`display_name`、`useVdd`、`customScreenMode` 与 HDR 显示参数覆盖
-- 配合 Foundation Sunshine，可在支持的主机上启用双向剪贴板同步，当前支持文本与单张图片，并按串流窗口焦点自动接管当前会话
-- 网络与主机协作支持自定义端口、IPv6、域名连接、每台主机独立连接方式，以及 `AWDL`、连接警告、性能浮窗、输入诊断、原始 / 浓缩日志等稳定性工具
-
-</details>
-
-## 🖥️ 主机端兼容性
-
-| 主机软件 | 兼容性 | 备注 |
-|----------|--------|------|
-| [Foundation Sunshine](https://github.com/qiin2333/foundation-sunshine) | ⭐ 推荐 | 支持麦克风、YUV 4:4:4、多通道音频，以及双向剪贴板文本 / 单张图片同步等完整增强能力 |
-| [Sunshine (LizardByte)](https://github.com/LizardByte/Sunshine) | ✅ 支持 | 大部分功能可用，部分增强能力受限 |
-| GeForce Experience | ⚠️ 基础支持 | 已停止维护，不支持麦克风等新能力 |
-
-> 💡 麦克风、YUV 4:4:4、部分输入与音频增强能力更适合配合 [Foundation Sunshine](https://github.com/qiin2333/foundation-sunshine) 使用。
-
-## 📦 下载
-
-- 从 [Releases](https://github.com/skyhua0224/moonlight-macos-enhanced/releases) 下载最新版本
-- 发布页提供三种安装包：`universal`、`arm64`、`x86_64`
-- 如果你不清楚它们之间的区别，默认推荐下载 `universal`
-
-## 📸 截图
-
-| 主机列表 | 应用列表 |
-|:--------:|:--------:|
-| <img src="readme-assets/images/host-list.png" width="400" alt="主机列表"> | <img src="readme-assets/images/app-list.png" width="400" alt="应用列表"> |
-
-| 性能浮窗 | 连接管理 |
-|:--------:|:--------:|
-| <img src="readme-assets/images/performance-overlay.png" width="400" alt="性能浮窗"> | <img src="readme-assets/images/connection-manager.png" width="400" alt="连接管理"> |
-
-| 串流中遮罩 | 连接错误 |
-|:----------:|:--------:|
-| <img src="readme-assets/images/streaming-overlay.png" width="400" alt="串流中遮罩"> | <img src="readme-assets/images/connection-error.png" width="400" alt="连接错误"> |
-
-| 视频设置 | 串流设置 |
-|:--------:|:--------:|
-| <img src="readme-assets/images/settings-video.png" width="400" alt="视频设置"> | <img src="readme-assets/images/settings-streaming.png" width="400" alt="串流设置"> |
-
-## 🔊 视音频能力
-
-### 视频链路
-- 支持自定义分辨率、帧率、远端分辨率与远端帧率覆盖
-- 视频协商覆盖 `AV1 / HEVC / H.264`、HDR、YUV `4:4:4` 与自动码率调节
-- 提供 `原生渲染器 / Metal 渲染器 / 兼容渲染器` 三条视频呈现链路
-- `原生渲染器` 面向最低延迟与最高默认色准；`Metal 渲染器` 面向更深的 HDR 与色彩调节；`兼容渲染器` 面向旧系统和异常恢复
-
-### HDR / 色彩 / 画质增强
-- HDR 传输函数支持 `HLG / PQ / Auto`，并提供更贴近当前显示器的客户端侧 HDR 呈现策略
-- `Metal 渲染器` 支持 HDR 元数据来源、本机显示器 HDR 配置、亮度参数、光学输出倍率、HLG 观看环境、EDR 策略与色调映射策略
-- 画质增强链路支持 `VT 低延迟超分`、`VT 高质量超分`、`MetalFX` 与 `基础缩放`
-- `VT 低延迟插帧` 也已接入到 Metal 视频链路中，用于高刷新率显示器下的画面节奏增强
-
-### 音频链路
-- 默认音频链路使用更贴近 `Core Audio` 的低延迟本地播放路径
-- 支持 `2ch / 5.1 / 7.1 / 7.1.4` 多通道音频接收、协商与本地播放
-- 当输出设备本身支持多通道时，优先保留真实多通道播放；当输出设备为耳机或 `2.0 / 2.1` 音箱时，可切换 `音效增强`
-- `音效增强` 面向耳机与立体声设备提供客户端侧 EQ、空间感、音场与预设调节
-- 配合支持相关能力的 [Foundation Sunshine](https://github.com/qiin2333/foundation-sunshine) 时，可使用增强后的麦克风 uplink 与更完整的多通道协商路径
-
-## 🖱️ 输入与控制
-
-### 默认行为
-- **鼠标模式默认：自由鼠标**
-- **鼠标驱动默认：Automatic**
-- **Automatic 顺序：CoreHID → HID → MFI**
-
-### 鼠标模式
-- **锁定鼠标**：更适合游戏、FPS、需要持续相对移动的场景
-- **自由鼠标**：更适合远控、多屏切换与桌面应用操作，可无缝切换到其他显示器继续使用
-
-### 鼠标 / 滚轮链路
-- `CoreHID` 负责更低延迟、更高回报率的相对鼠标输入体验，让鼠标操作更直接、更细腻，也更适合追求灵敏度与稳定操控的场景
-- 支持本地光标、指针速度、左右键交换、反转滚动与 `CoreHID` 报告率上限
-- 滚轮链路按来源拆分为 `物理滚轮`、`改写 / 平滑滚轮` 与 `触控板` 三类独立策略
-- 物理滚轮支持自动、高精度、分段等模式，并可独立调节距离、速度与尾迹过滤
-
-### 键盘 / 手柄 / 快捷键
-- 键盘链路支持常用 Windows 快捷键翻译、自定义快捷键翻译规则与 Moonlight 自定义串流快捷键
-- 手柄链路支持多手柄、震动、Guide 模拟与手柄模拟鼠标
-- 鼠标、键盘、手柄设置页已经按使用场景重整，常用输入选项更集中
-
-### 串流快捷键
-以下 Moonlight 自定义串流快捷键支持在 `设置 → 输入 → 键盘` 中调整：
-
-| 快捷键 | 功能 | 说明 |
-|--------|------|------|
-| `Ctrl` + `Option` | 释放鼠标捕获 | 串流窗口中 |
-| `Ctrl` + `Option` + `S` | 切换性能浮窗 | 串流窗口中 |
-| `Ctrl` + `Option` + `M` | 切换鼠标模式 | 串流窗口中 |
-| `Ctrl` + `Option` + `G` | 切换全屏悬浮球 | 全屏模式 |
-| `Ctrl` + `Option` + `W` | 断开串流 | 串流窗口中 |
-| `Ctrl` + `Shift` + `W` | 断开并退出应用 | 串流窗口中 |
-| `Ctrl` + `Option` + `C` | 打开控制中心 | 仅全屏 / 无边框 |
-| `Ctrl` + `Option` + `Command` + `B` | 无边框 / 窗口切换 | 高级排障快捷键 |
-
-> 💡 这里列的是 Moonlight 自定义串流快捷键；标准 macOS 快捷键如 `⌘W`、`⌃⌘F` 不在此表内。
-
-## 🔧 连接、诊断与稳定性
-
-- 每台主机支持独立连接方式管理
-- 支持自定义端口、IPv6 与域名连接
-- 提供性能浮窗、连接警告与输入诊断
-- 同时提供原始日志与浓缩日志，便于排障
-- 提供 AWDL 稳定性辅助项、自动重连与超时恢复能力
-
-## 🛠️ 安装
-
-### 下载发布版
-从 [Releases](https://github.com/skyhua0224/moonlight-macos-enhanced/releases) 下载最新 `.dmg`。
-
-> ⚠️ 此应用当前未做 Apple 公证。若 macOS 提示“Moonlight.app 已损坏”或阻止打开，通常是 Gatekeeper 拦截未公证应用，并不一定代表文件真的损坏。
->
-> 首次启动建议按这个顺序尝试：
-> 1. 右键应用，选择“打开”
-> 2. 前往 **系统设置 → 隐私与安全性**，选择“仍要打开”
-> 3. 若仍被拦截，执行：
->    `xattr -dr com.apple.quarantine /Applications/Moonlight.app`
-
-### 从源码构建
+**No local dev setup is needed to use a release DMG.** For source builds, use a Mac with Xcode:
 
 ```bash
-git clone --recursive https://github.com/skyhua0224/moonlight-macos-enhanced.git
-cd moonlight-macos-enhanced
-
-curl -L -o xcframeworks.zip "https://github.com/coofdy/moonlight-mobile-deps/releases/download/latest/moonlight-apple-xcframeworks.zip"
+git clone --recursive https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG.git
+cd moonlight-macos-enhanced-ENG
+curl -L -o xcframeworks.zip https://github.com/coofdy/moonlight-mobile-deps/releases/download/latest/moonlight-apple-xcframeworks.zip
 unzip -o xcframeworks.zip -d xcframeworks/
+open Moonlight.xcodeproj
 ```
 
-然后：
-1. 用 Xcode 打开 `Moonlight.xcodeproj`
-2. 在 **Signing & Capabilities** 中改成你自己的 Team
-3. 按需修改 Bundle Identifier
-4. 选择 **Moonlight for macOS** scheme 后运行
+Choose the **Moonlight for macOS** scheme and configure your signing team if you want to sign your own build. [GitHub Actions](.github/workflows/build.yml) produces Intel, Apple Silicon and universal DMGs, checking the architecture of both the main binary and the privileged helper.
 
-## 🐛 问题反馈
+## 🐛 Found a bug? Join the party.
 
-提交 Bug 时建议包含：
-- macOS 版本
-- 机型 / 芯片类型
-- 主机端软件及版本
-- 是否使用了 Mos、BetterMouse、SteerMouse 等第三方鼠标工具
-- 复现步骤
-- 日志或截图
+Open an [issue](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/issues) with your Mac model, macOS version, VibePollo version, reproduction steps and useful diagnostics from **Settings → App → Debug Log**. Please keep API tokens and credentials out of screenshots and logs. Contributions should preserve upstream attribution and check the Intel build. 🤝
 
-若是输入 / 滚轮 / 鼠标问题，建议附带：
-- `设置 → App → Debug Log` 导出的日志
-- 你使用的是 **自由鼠标** 还是 **锁定鼠标**
-- 你使用的是 **Automatic / CoreHID / HID / MFI** 中哪条路径
+## 🙏 Credits & license
 
-## 🤝 贡献
-
-欢迎提交 Issue 和 PR。建议：
-- 保持中英文用户文案同步
-- 提交前至少验证核心串流与输入路径
-- PR 描述优先写用户可感知变化，而不是只贴 commit 标题
-
-## 📬 联系方式
-
-- 📧 Email: [dev@sky-hua.xyz](mailto:dev@sky-hua.xyz)
-- 💬 Telegram: [@skyhua](https://t.me/skyhua)
-- 🐧 QQ: 2110591491
-- 🔗 GitHub Issues: [提交 Issue](https://github.com/skyhua0224/moonlight-macos-enhanced/issues)
-
-## 🙏 致谢
-
-完整致谢、上游来源与生态参考请见 [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md)。
-
-- 直接代码基础：`moonlight-macos`、`moonlight-ios`、`moonlight-common-c`
-- 功能与行为参考：`moonlight-qt`、`qiin2333/moonlight-qt`
-- 主机端生态参考：`Sunshine`、`foundation-sunshine`
-- 输入与滚轮体验参考：`Mos`、`Mouser`
-
-## 📄 许可证
-
-本项目采用 [GPLv3 许可证](LICENSE.txt)。
+Built on [Moonlight macOS Enhanced](https://github.com/skyhua0224/moonlight-macos-enhanced) and its Moonlight foundations. [VibePollo](https://github.com/Nonary/Vibepollo) is a separate host project; moonmac-vibe is not its official client. See [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md) for upstream contributors and related projects. The code remains under [GPL-3.0](LICENSE.txt). 🌙
