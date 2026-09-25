@@ -241,11 +241,11 @@ private final class HostCertificateDelegate: NSObject, URLSessionDelegate, URLSe
 
 private struct HostStatsView: View {
   @AppStorage("VibePollo.StatsAddress") private var address = ""
-  @State private var newToken = ""
+  @SwiftUI.State private var newToken = ""
   @StateObject private var model = HostStatsModel()
-  @State private var stream: StreamSample?
-  @State private var fpsHistory: [Double] = []
-  @State private var lossHistory: [Double] = []
+  @SwiftUI.State private var stream: StreamSample?
+  @SwiftUI.State private var fpsHistory: [Double] = []
+  @SwiftUI.State private var lossHistory: [Double] = []
   private let clock = Timer.publish(every: 2, on: .main, in: .common).autoconnect()
   private let accent = Color(nsColor: CrimsonAppearance.accent)
 
