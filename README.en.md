@@ -1,5 +1,17 @@
 # Moonlight macOS Enhanced
 
+## Black & Crimson and VibePollo Host Stats
+
+On macOS, choose **Settings → App → Appearance → Black & Crimson** (or **View → Appearance → Black & Crimson**) to apply the crimson palette across the client, settings, stream controls, and the host stats window. The setting persists across launches.
+
+Open **Window → VibePollo Host Stats** (⇧⌘H) for live CPU, GPU, RAM, VRAM, encoder, temperature, and network counters. Each graph retains up to five minutes of samples at VibePollo's default two-second polling interval. While a stream to the same host is active, the window also shows client-rendered FPS, network loss, jitter, decode time, render time, video bitrate, and five-minute FPS/loss graphs. Stats do not affect the stream's codec, bitrate, or rendering path.
+
+1. In VibePollo's Web UI, create an API token scoped only to **GET `/api/host/stats`**.
+2. Enter the host's Web UI address (for example, `192.168.1.10`; the default HTTPS port is `47990`) and paste the token into the stats window. The token is saved in macOS Keychain.
+3. If the host uses a self-signed HTTPS certificate, compare the displayed SHA-256 fingerprint with the host certificate, then explicitly trust it. A certificate change requires a new approval.
+
+The Web UI must allow connections from your Mac's network. Metrics that VibePollo cannot provide on a given host display as **N/A**.
+
 <div align="center">
 
 [![Build](https://github.com/skyhua0224/moonlight-macos-enhanced/actions/workflows/build.yml/badge.svg)](https://github.com/skyhua0224/moonlight-macos-enhanced/actions/workflows/build.yml) [![Release](https://img.shields.io/github/v/release/skyhua0224/moonlight-macos-enhanced?include_prereleases)](https://github.com/skyhua0224/moonlight-macos-enhanced/releases) [![Downloads](https://img.shields.io/github/downloads/skyhua0224/moonlight-macos-enhanced/total)](https://github.com/skyhua0224/moonlight-macos-enhanced/releases) [![Apple Silicon](https://img.shields.io/badge/Apple%20Silicon-Native-orange.svg)]() [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE.txt)

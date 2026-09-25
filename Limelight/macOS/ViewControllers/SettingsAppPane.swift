@@ -18,6 +18,7 @@ private enum AppAppearanceOption: Int, CaseIterable, Identifiable {
   case system = 0
   case light = 1
   case dark = 2
+  case crimson = 3
 
   var id: Int { rawValue }
 
@@ -29,6 +30,8 @@ private enum AppAppearanceOption: Int, CaseIterable, Identifiable {
       return "Light"
     case .dark:
       return "Dark"
+    case .crimson:
+      return "Black & Crimson"
     }
   }
 }

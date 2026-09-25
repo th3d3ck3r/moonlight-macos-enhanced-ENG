@@ -32,10 +32,10 @@
     self.runningIconContainer.layer.masksToBounds = YES;
     self.runningIconContainer.layer.cornerRadius = self.runningIconContainer.bounds.size.width / 2;
     
-    self.runningIconContainer.backgroundColor = [NSColor systemBlueColor];
+    self.runningIconContainer.backgroundColor = CrimsonAppearance.isEnabled ? CrimsonAppearance.accent : [NSColor systemBlueColor];
     
     NSShadow *runningShadow = [[NSShadow alloc] init];
-    [runningShadow setShadowColor:[NSColor systemBlueColor]];
+    [runningShadow setShadowColor:CrimsonAppearance.isEnabled ? CrimsonAppearance.accent : [NSColor systemBlueColor]];
     [runningShadow setShadowOffset:NSMakeSize(0, -1)];
     [runningShadow setShadowBlurRadius:1.5];
     self.runningIconContainer.shadow = runningShadow;
@@ -178,7 +178,7 @@
     appCoverArtContainerView.layer.shadowOffset = NSMakeSize(0, -5);
     appCoverArtContainerView.layer.shadowRadius = 5;
 
-    self.appNameContainer.backgroundColor = selected ? [NSColor selectedContentBackgroundColor] : [NSColor clearColor];
+    self.appNameContainer.backgroundColor = selected ? (CrimsonAppearance.isEnabled ? CrimsonAppearance.accent : [NSColor selectedContentBackgroundColor]) : [NSColor clearColor];
     self.appName.textColor = selected ? [NSColor alternateSelectedControlTextColor] : [NSColor textColor];
 
     [NSAnimationContext beginGrouping];

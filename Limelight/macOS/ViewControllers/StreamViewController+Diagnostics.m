@@ -7,6 +7,27 @@
 
 @implementation StreamViewController (Diagnostics)
 
+- (void)publishHostStatsStreamSample {
+    if (!self.streamMan.connection || !self.streamMan.connection.renderer) return;
+    VideoStats stats = self.streamMan.connection.renderer.videoStats;
+    if (stats.lastUpdatedTimestamp == 0 || LiGetMillis() - stats.lastUpdatedTimestamp > 3000) return;
+    double loss = stats.totalFrames ? 100.0 * stats.networkDroppedFrames / stats.totalFrames : 0;
+    double decodeMs = stats.decodedFrames ? (double)stats.totalDecodeTime / stats.decodedFrames : 0;
+    double renderMs = stats.renderedFrames ? (double)stats.totalRenderTime / stats.renderedFrames : 0;
+    NSDictionary *sample = @{
+        @"hostUUID": self.app.host.uuid ?: @"",
+        @"hostName": self.app.host.displayName ?: @"Host",
+        @"hostAddress": self.app.host.activeAddress ?: self.app.host.address ?: @"",
+        @"fps": @(stats.renderedFps),
+        @"networkLoss": @(loss),
+        @"jitterMs": @(stats.jitterMs),
+        @"decodeMs": @(decodeMs),
+        @"renderMs": @(renderMs),
+        @"bitrateMbps": @(stats.receivedBytes * 8.0 / 1000000.0),
+    };
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"MoonlightStreamStatsSample" object:nil userInfo:sample];
+}
+
 - (BOOL)hasReceivedAnyVideoFrames {
     @try {
         if (!self.streamMan) {

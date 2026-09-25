@@ -630,7 +630,7 @@ highFreqMotor:(unsigned short)highFreqMotor {
         [self.view.window moonlight_centerWindowOnScreen:preferredScreen];
     }
     
-    self.view.window.appearance = [NSAppearance appearanceNamed:NSAppearanceNameVibrantDark];
+    self.view.window.appearance = [NSAppearance appearanceNamed:CrimsonAppearance.isEnabled ? NSAppearanceNameDarkAqua : NSAppearanceNameVibrantDark];
 
     NSInteger displayMode = [SettingsClass displayModeFor:self.app.host.uuid];
     if (displayMode == 1 && ![self isWindowFullscreen] && !self.fullscreenTransitionInProgress) {
@@ -883,6 +883,8 @@ highFreqMotor:(unsigned short)highFreqMotor {
         [self.statsTimer invalidate];
         self.statsTimer = nil;
     }
+    [self.hostStatsBridgeTimer invalidate];
+    self.hostStatsBridgeTimer = nil;
     if (self.streamHealthTimer != nil) {
         [self.streamHealthTimer invalidate];
         self.streamHealthTimer = nil;
@@ -1406,6 +1408,14 @@ highFreqMotor:(unsigned short)highFreqMotor {
                                                                                                                  appName:self.app.name
                                                                                                 windowController:self.view.window.windowController];
 
+                [self.hostStatsBridgeTimer invalidate];
+                self.hostStatsBridgeTimer = [NSTimer scheduledTimerWithTimeInterval:2.0
+                                                                            target:self
+                                                                          selector:@selector(publishHostStatsStreamSample)
+                                                                          userInfo:nil
+                                                                           repeats:YES];
+                [self publishHostStatsStreamSample];
+
                 [self resetClipboardActivationDiagnosticState];
                 self.clipboardRuntimeConnection = callbackConn ?: self.streamMan.connection;
                 Log(LOG_I, @"[clipboard] Runtime clipboard connection selected: callback=%p stream=%p active=%p",
@@ -1579,6 +1589,9 @@ highFreqMotor:(unsigned short)highFreqMotor {
 
     dispatch_async(dispatch_get_main_queue(), ^{
         [self releaseClipboardSyncOwnershipWithUnbind:NO];
+        [self.hostStatsBridgeTimer invalidate];
+        self.hostStatsBridgeTimer = nil;
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"MoonlightStreamStatsEnded" object:self.app.host.uuid];
         [self hideConnectionTimeoutOverlay];
         if (self.statsTimer) {
             [self.statsTimer invalidate];

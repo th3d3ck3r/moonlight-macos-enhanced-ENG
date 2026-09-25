@@ -15,7 +15,7 @@ class SettingsHostingController<RootView: View>: NSWindowController {
   private var languageObserver: Any?
 
   convenience init(rootView: RootView) {
-    let hostingController = NSHostingController(rootView: rootView)
+    let hostingController = NSHostingController(rootView: rootView.modifier(AppAppearance()))
 
     let window = NSWindow(contentViewController: hostingController)
     window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
@@ -318,7 +318,7 @@ final class WelcomePermissionsHostingController: NSWindowController, NSWindowDel
           WelcomePermissionsState.markShown()
           window.performClose(nil)
         }
-      }
+      }.modifier(AppAppearance())
     )
     window.contentViewController = hostingController
     window.styleMask = [.titled, .closable, .miniaturizable]

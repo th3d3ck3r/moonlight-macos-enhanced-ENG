@@ -55,8 +55,13 @@
         [self addSubview:_iconView];
 
         [self updateVisualStyle];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateVisualStyle) name:@"MoonlightThemeDidChange" object:nil];
     }
     return self;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (NSImageView *)iconView {
@@ -187,15 +192,15 @@
     _plateShadowLayer.shadowRadius = active ? 16.0f : 12.0f;
     _plateShadowLayer.shadowOffset = CGSizeMake(0.0, 3.0);
 
-    _plateLayer.backgroundColor = [NSColor colorWithRed:0.96 green:0.97 blue:0.99 alpha:0.98].CGColor;
+    _plateLayer.backgroundColor = (CrimsonAppearance.isEnabled ? CrimsonAppearance.surface : [NSColor colorWithRed:0.96 green:0.97 blue:0.99 alpha:0.98]).CGColor;
     _plateLayer.borderWidth = 1.0;
-    _plateLayer.borderColor = [NSColor colorWithWhite:1.0 alpha:0.78].CGColor;
+    _plateLayer.borderColor = (CrimsonAppearance.isEnabled ? CrimsonAppearance.accent : [NSColor colorWithWhite:1.0 alpha:0.78]).CGColor;
 
-    _plateInnerLayer.backgroundColor = [NSColor colorWithRed:0.89 green:0.91 blue:0.95 alpha:0.92].CGColor;
+    _plateInnerLayer.backgroundColor = (CrimsonAppearance.isEnabled ? CrimsonAppearance.surface : [NSColor colorWithRed:0.89 green:0.91 blue:0.95 alpha:0.92]).CGColor;
     _plateInnerLayer.borderWidth = 1.0;
-    _plateInnerLayer.borderColor = [NSColor colorWithWhite:0.72 alpha:0.42].CGColor;
+    _plateInnerLayer.borderColor = (CrimsonAppearance.isEnabled ? CrimsonAppearance.border : [NSColor colorWithWhite:0.72 alpha:0.42]).CGColor;
 
-    _iconView.contentTintColor = [NSColor colorWithRed:0.12 green:0.15 blue:0.20 alpha:0.98];
+    _iconView.contentTintColor = CrimsonAppearance.isEnabled ? CrimsonAppearance.accent : [NSColor colorWithRed:0.12 green:0.15 blue:0.20 alpha:0.98];
 }
 
 - (void)mouseDown:(NSEvent *)event {

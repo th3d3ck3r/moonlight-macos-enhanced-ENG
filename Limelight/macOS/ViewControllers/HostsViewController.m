@@ -71,6 +71,7 @@
     [self prepareDiscovery];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(languageChanged:) name:@"LanguageChanged" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(languageChanged:) name:@"MoonlightThemeDidChange" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshHostDiscovery:) name:@"MoonlightRequestHostDiscovery" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleDiscoveryPreferencesChanged:) name:@"MoonlightDiscoveryPreferencesChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleHostAutoAddressSwitched:) name:@"HostAutoAddressSwitched" object:nil];
