@@ -2,6 +2,12 @@
 
 Changes specific to moonmac-vibe. The [upstream Moonlight macOS Enhanced project](https://github.com/skyhua0224/moonlight-macos-enhanced) has its own history; inherited features are described in [README.en.md](README.en.md).
 
+## Unreleased
+
+### Fixed
+
+- Give Moonmac-Vibe its own stable bundle identifier and permit outbound connections in its sandbox, so macOS can attribute Local Network requests to this app.
+
 ## [v0.1.2] — 2026-09-25
 
 ### Fixed

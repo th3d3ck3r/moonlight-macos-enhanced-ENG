@@ -19,7 +19,7 @@ static NSString * const MLAwdlIfconfigToolPath = @"/sbin/ifconfig";
 + (NSString *)helperLabel {
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     if (bundleIdentifier.length == 0) {
-        return [@"std.skyhua.MoonlightMac" stringByAppendingString:MLAwdlPrivilegedHelperSuffix];
+        return [@"com.th3d3ck3r.moonmac-vibe" stringByAppendingString:MLAwdlPrivilegedHelperSuffix];
     }
     return [bundleIdentifier stringByAppendingString:MLAwdlPrivilegedHelperSuffix];
 }

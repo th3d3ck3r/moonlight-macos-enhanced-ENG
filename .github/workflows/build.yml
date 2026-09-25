@@ -73,7 +73,7 @@ jobs:
     - name: Verify ${{ matrix.variant }} binary slices
       run: |
         main_binary="build/Build/Products/Release/Moonlight.app/Contents/MacOS/Moonlight"
-        helper_binary="build/Build/Products/Release/Moonlight.app/Contents/Library/LaunchServices/std.skyhua.MoonlightMac.AwdlPrivilegedHelper"
+        helper_binary="build/Build/Products/Release/Moonlight.app/Contents/Library/LaunchServices/com.th3d3ck3r.moonmac-vibe.AwdlPrivilegedHelper"
 
         lipo -info "$main_binary"
         file "$main_binary"
@@ -108,7 +108,18 @@ jobs:
         APP_INFO_PLIST: build/Build/Products/Release/Moonlight.app/Contents/Info.plist
       run: |
         /usr/libexec/PlistBuddy -c 'Print :NSBonjourServices:0' "$APP_INFO_PLIST" | grep -Fx '_nvstream._tcp'
-        /usr/libexec/PlistBuddy -c 'Print :NSLocalNetworkUsageDescription' "$APP_INFO_PLIST" | grep -F 'VibePollo'
+        /usr/libexec/PlistBuddy -c 'Print :NSLocalNetworkUsageDescription' "$APP_INFO_PLIST" | grep -Fx 'Moonmac-Vibe uses your local network to discover and connect to game streaming hosts.'
+
+    - name: Sign and verify app identity
+      run: |
+        app="build/Build/Products/Release/Moonlight.app"
+        helper="$app/Contents/Library/LaunchServices/com.th3d3ck3r.moonmac-vibe.AwdlPrivilegedHelper"
+        codesign --force --sign - --timestamp=none "$helper"
+        codesign --force --sign - --timestamp=none --entitlements Moonlight.entitlements "$app"
+        codesign --verify --deep --strict --verbose=2 "$app"
+        codesign -dvvv "$app" 2>&1 | grep -F 'Identifier=com.th3d3ck3r.moonmac-vibe'
+        /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist" | grep -Fx 'com.th3d3ck3r.moonmac-vibe'
+        codesign -d --entitlements :- "$app" 2>/dev/null | plutil -extract com.apple.security.network.client raw -o - - | grep -Fx true
 
     - name: Package ${{ matrix.variant }} app bundle
       run: |
@@ -252,7 +263,7 @@ jobs:
     - name: Verify universal binary slices
       run: |
         main_binary="dist/universal/Moonlight.app/Contents/MacOS/Moonlight"
-        helper_binary="dist/universal/Moonlight.app/Contents/Library/LaunchServices/std.skyhua.MoonlightMac.AwdlPrivilegedHelper"
+        helper_binary="dist/universal/Moonlight.app/Contents/Library/LaunchServices/com.th3d3ck3r.moonmac-vibe.AwdlPrivilegedHelper"
 
         lipo -info "$main_binary"
         lipo -info "$helper_binary"
@@ -269,6 +280,18 @@ jobs:
           echo "Universal helper binary missing expected slices"
           exit 1
         fi
+
+    - name: Sign and verify universal app identity
+      run: |
+        app="dist/universal/Moonlight.app"
+        helper="$app/Contents/Library/LaunchServices/com.th3d3ck3r.moonmac-vibe.AwdlPrivilegedHelper"
+        codesign --force --sign - --timestamp=none "$helper"
+        codesign --force --sign - --timestamp=none --entitlements Moonlight.entitlements "$app"
+        codesign --verify --deep --strict --verbose=2 "$app"
+        codesign -dvvv "$app" 2>&1 | grep -F 'Identifier=com.th3d3ck3r.moonmac-vibe'
+        /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist" | grep -Fx 'com.th3d3ck3r.moonmac-vibe'
+        /usr/libexec/PlistBuddy -c 'Print :NSBonjourServices:0' "$app/Contents/Info.plist" | grep -Fx '_nvstream._tcp'
+        /usr/libexec/PlistBuddy -c 'Print :NSLocalNetworkUsageDescription' "$app/Contents/Info.plist" | grep -Fx 'Moonmac-Vibe uses your local network to discover and connect to game streaming hosts.'
 
     - name: Create universal DMG
       run: |

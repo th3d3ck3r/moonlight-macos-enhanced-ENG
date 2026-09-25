@@ -4,7 +4,7 @@
 
 #import "AwdlPrivilegedHelperProtocol.h"
 
-static NSString * const MLAwdlPrivilegedHelperFallbackLabel = @"std.skyhua.MoonlightMac.AwdlPrivilegedHelper";
+static NSString * const MLAwdlPrivilegedHelperFallbackLabel = @"com.th3d3ck3r.moonmac-vibe.AwdlPrivilegedHelper";
 
 static NSString *MLAwdlPrivilegedHelperServiceLabel(void) {
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
@@ -17,7 +17,7 @@ static NSString *MLAwdlAuthorizedClientBundleIdentifier(void) {
         return [helperLabel stringByReplacingOccurrencesOfString:@".AwdlPrivilegedHelper" withString:@""];
     }
 
-    return @"std.skyhua.MoonlightMac";
+    return @"com.th3d3ck3r.moonmac-vibe";
 }
 
 @interface MLAwdlPrivilegedHelperService : NSObject <NSXPCListenerDelegate, MLAwdlPrivilegedHelperProtocol>
