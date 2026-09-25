@@ -366,7 +366,7 @@ jobs:
         body_path: release_body.md
 
   publish_moonmac_vibe:
-    name: Publish moonmac-vibe v0.1.0
+    name: Publish moonmac-vibe v0.1.1
     needs: [build_arch, build_universal, build]
     if: github.event_name == 'push' && github.ref == 'refs/heads/codex/crimson-vibepollo-stats'
     runs-on: ubuntu-latest
@@ -390,10 +390,14 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh release create moonmac-vibe-v0.1.0 \
+        if gh release view moonmac-vibe-v0.1.0 >/dev/null 2>&1; then
+          gh release edit moonmac-vibe-v0.1.0 --prerelease
+        fi
+        gh release create moonmac-vibe-v0.1.1 \
           dist/moonmac-vibe-x86_64.dmg \
           dist/moonmac-vibe-arm64.dmg \
           dist/moonmac-vibe-universal.dmg \
           --target "$GITHUB_SHA" \
-          --title 'moonmac-vibe v0.1.0' \
-          --notes-file .github/release-notes/moonmac-vibe-v0.1.0.md
+          --title 'moonmac-vibe v0.1.1' \
+          --latest \
+          --notes-file .github/release-notes/moonmac-vibe-v0.1.1.md

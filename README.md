@@ -2,7 +2,7 @@
 
 ### Your Mac. Your VibePollo host. One crimson command center. 🎮📊
 
-**moonmac-vibe** is a native macOS Moonlight streaming client built primarily for [VibePollo](https://github.com/Nonary/Vibepollo). It brings an app-wide **Black & Crimson** look, a live host stats window, five-minute graphs, and the full streaming foundation of [Moonlight macOS Enhanced](https://github.com/skyhua0224/moonlight-macos-enhanced).
+**moonmac-vibe** is a native macOS Moonlight streaming client built primarily for [VibePollo](https://github.com/Nonary/Vibepollo). It brings an app-wide **Black & Crimson** look, a live host stats window, five-minute graphs, an English-first interface, and the full streaming foundation of [Moonlight macOS Enhanced](https://github.com/skyhua0224/moonlight-macos-enhanced).
 
 [**⬇️ Grab a release**](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [**📝 Changelog**](CHANGELOG.md) · [**🧰 Inherited feature guide**](README.en.md) · [**🙏 Credits**](ACKNOWLEDGEMENTS.md)
 
@@ -11,6 +11,7 @@
 | | Feature | What it does |
 | --- | --- | --- |
 | 🎨 | **Black & Crimson everywhere** | Styles the host browser, settings, streaming controls and stats window. Choose **Settings → App → Appearance → Black & Crimson** or **View → Appearance → Black & Crimson**. Your choice persists. |
+| 🗣️ | **English-first UI** | English is the default on new installs, including stream menus, connection editing, diagnostics and log labels. An existing language preference still takes precedence. |
 | 🖥️ | **VibePollo host health** | Open **Window → VibePollo Host Stats** (⇧⌘H) for CPU, GPU, encoder, memory, temperature and network measurements the host exposes. Missing sensors show N/A. |
 | 📈 | **Five-minute graphs** | About 150 samples at roughly two-second intervals while the window is open; see host trends and, while streaming to the selected host, client FPS and network loss. |
 | 🚀 | **Streaming telemetry** | Client FPS, loss, jitter, video bitrate, decode and render time appear beside host measurements during the matching stream. |
