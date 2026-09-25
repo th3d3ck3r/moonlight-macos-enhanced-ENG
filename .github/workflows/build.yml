@@ -119,7 +119,8 @@ jobs:
         codesign --verify --verbose=2 "$app/Contents/MacOS/Moonlight"
         codesign -dvvv "$app" 2>&1 | grep -F 'Identifier=com.th3d3ck3r.moonmac-vibe'
         /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist" | grep -Fx 'com.th3d3ck3r.moonmac-vibe'
-        codesign -d --entitlements :- "$app" 2>/dev/null | plutil -extract com.apple.security.network.client raw -o - - | grep -Fx true
+        codesign -d --entitlements "$RUNNER_TEMP/moonmac-entitlements.plist" "$app"
+        /usr/libexec/PlistBuddy -c "Print :com.apple.security.network.client" "$RUNNER_TEMP/moonmac-entitlements.plist" | grep -Fx true
 
     - name: Package ${{ matrix.variant }} app bundle
       run: |
