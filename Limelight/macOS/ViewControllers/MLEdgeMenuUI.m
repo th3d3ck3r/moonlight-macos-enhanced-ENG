@@ -55,13 +55,17 @@
         [self addSubview:_iconView];
 
         [self updateVisualStyle];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateVisualStyle) name:@"MoonlightThemeDidChange" object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(themeDidChange:) name:@"MoonlightThemeDidChange" object:nil];
     }
     return self;
 }
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)themeDidChange:(NSNotification *)notification {
+    [self updateVisualStyle];
 }
 
 - (NSImageView *)iconView {
