@@ -220,7 +220,13 @@ static BOOL MoonlightShouldAutoDiscoverNewHosts(void) {
             callback(host, nil);
         }
     } else if (!prohibitedAddress) {
-        callback(nil, NSLocalizedString(@"Could not connect to host. Ensure GameStream is enabled in GeForce Experience on your PC.", @"Host connect failure"));
+        NSString *reason = serverInfoResponse.statusMessage;
+        NSString *detail = reason.length > 0
+            ? [NSString stringWithFormat:@"\n\nConnection detail: %@ (code %ld).", reason, (long)serverInfoResponse.statusCode]
+            : @"";
+        callback(nil, [NSString stringWithFormat:
+            @"Could not reach the host's streaming service at %@. Check the host IP, confirm VibePollo or Sunshine streaming is running, and allow MoonMac Vibe in macOS Local Network settings. Use the host's LAN IP here, not the Web UI address or port 47990.%@",
+            hostAddress, detail]);
     } else {
         callback(nil, prohibitedAddressMessage);
     }
