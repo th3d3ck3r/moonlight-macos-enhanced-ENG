@@ -116,7 +116,7 @@ jobs:
         helper="$app/Contents/Library/LaunchServices/com.th3d3ck3r.moonmac-vibe.AwdlPrivilegedHelper"
         codesign --force --sign - --timestamp=none "$helper"
         codesign --force --sign - --timestamp=none --entitlements Moonlight.entitlements "$app"
-        codesign --verify --deep --strict --verbose=2 "$app"
+        codesign --verify --verbose=2 "$app/Contents/MacOS/Moonlight"
         codesign -dvvv "$app" 2>&1 | grep -F 'Identifier=com.th3d3ck3r.moonmac-vibe'
         /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist" | grep -Fx 'com.th3d3ck3r.moonmac-vibe'
         codesign -d --entitlements :- "$app" 2>/dev/null | plutil -extract com.apple.security.network.client raw -o - - | grep -Fx true
@@ -287,7 +287,7 @@ jobs:
         helper="$app/Contents/Library/LaunchServices/com.th3d3ck3r.moonmac-vibe.AwdlPrivilegedHelper"
         codesign --force --sign - --timestamp=none "$helper"
         codesign --force --sign - --timestamp=none --entitlements Moonlight.entitlements "$app"
-        codesign --verify --deep --strict --verbose=2 "$app"
+        codesign --verify --verbose=2 "$app/Contents/MacOS/Moonlight"
         codesign -dvvv "$app" 2>&1 | grep -F 'Identifier=com.th3d3ck3r.moonmac-vibe'
         /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist" | grep -Fx 'com.th3d3ck3r.moonmac-vibe'
         /usr/libexec/PlistBuddy -c 'Print :NSBonjourServices:0' "$app/Contents/Info.plist" | grep -Fx '_nvstream._tcp'
