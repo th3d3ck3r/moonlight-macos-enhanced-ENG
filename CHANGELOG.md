@@ -2,6 +2,18 @@
 
 Changes specific to moonmac-vibe. The [upstream Moonlight macOS Enhanced project](https://github.com/skyhua0224/moonlight-macos-enhanced) has its own history; inherited features are described in [README.en.md](README.en.md).
 
+## [v0.1.2] — 2026-09-25
+
+### Fixed
+
+- Declare macOS local-network access and the `_nvstream._tcp` Bonjour service used to discover VibePollo and other GameStream hosts. This lets macOS present the appropriate local-network access prompt and identify the service the app browses.
+- Replace the obsolete GeForce Experience error shown when manually adding a VibePollo host with an actionable streaming-service error and its connection detail.
+- Add a host discovery troubleshooting guide covering local-network permission, VibePollo discovery, manual IP entry, and the difference between streaming and Web UI ports.
+
+### Verification
+
+- Confirmed the client browses `_nvstream._tcp` and VibePollo exposes that service when discovery is enabled. CI checks the macOS app and DMG builds; discovery still needs validation on a real Mac and host.
+
 ## [v0.1.1] — 2026-09-25
 
 ### Fixed
@@ -39,3 +51,4 @@ First VibePollo-focused moonmac-vibe release. 🌙
 
 [v0.1.0]: https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/moonmac-vibe-v0.1.0
 [v0.1.1]: https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/moonmac-vibe-v0.1.1
+[v0.1.2]: https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/moonmac-vibe-v0.1.2

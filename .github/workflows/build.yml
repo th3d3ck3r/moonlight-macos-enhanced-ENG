@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches: [master, main, codex/crimson-vibepollo-stats]
+    branches: [master, main, codex/crimson-vibepollo-stats, codex/vibepollo-discovery]
     tags:
       - 'v*'
   pull_request:
@@ -100,6 +100,15 @@ jobs:
           echo "Helper binary missing expected architecture ${{ matrix.archs }}"
           exit 1
         fi
+
+    - name: Verify local-network discovery declarations
+      # Verify the permission keys in the built bundle, not just the source plist.
+      # Missing declarations can prevent Bonjour discovery on recent macOS.
+      env:
+        APP_INFO_PLIST: build/Build/Products/Release/Moonlight.app/Contents/Info.plist
+      run: |
+        /usr/libexec/PlistBuddy -c 'Print :NSBonjourServices:0' "$APP_INFO_PLIST" | grep -Fx '_nvstream._tcp'
+        /usr/libexec/PlistBuddy -c 'Print :NSLocalNetworkUsageDescription' "$APP_INFO_PLIST" | grep -F 'VibePollo'
 
     - name: Package ${{ matrix.variant }} app bundle
       run: |
@@ -366,9 +375,9 @@ jobs:
         body_path: release_body.md
 
   publish_moonmac_vibe:
-    name: Publish moonmac-vibe v0.1.1
+    name: Publish moonmac-vibe v0.1.2
     needs: [build_arch, build_universal, build]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/crimson-vibepollo-stats'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/vibepollo-discovery'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -390,14 +399,14 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        if gh release view moonmac-vibe-v0.1.0 >/dev/null 2>&1; then
-          gh release edit moonmac-vibe-v0.1.0 --prerelease
+        if gh release view moonmac-vibe-v0.1.1 >/dev/null 2>&1; then
+          gh release edit moonmac-vibe-v0.1.1 --prerelease
         fi
-        gh release create moonmac-vibe-v0.1.1 \
+        gh release create moonmac-vibe-v0.1.2 \
           dist/moonmac-vibe-x86_64.dmg \
           dist/moonmac-vibe-arm64.dmg \
           dist/moonmac-vibe-universal.dmg \
           --target "$GITHUB_SHA" \
-          --title 'moonmac-vibe v0.1.1' \
+          --title 'moonmac-vibe v0.1.2' \
           --latest \
-          --notes-file .github/release-notes/moonmac-vibe-v0.1.1.md
+          --notes-file .github/release-notes/moonmac-vibe-v0.1.2.md

@@ -35,6 +35,12 @@
 	<string>© 2026 SkyHua and contributors</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Used to capture microphone audio for streaming to the host.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Find and connect to VibePollo and compatible streaming hosts on your local network.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_nvstream._tcp</string>
+	</array>
 	<key>NSInputMonitoringUsageDescription</key>
 	<string>Used to capture high-rate mouse input for low-latency streaming controls.</string>
 	<key>NSMainStoryboardFile</key>

@@ -28,6 +28,13 @@ Host stats use VibePollo's Web UI API, separate from the GameStream connection. 
 
 The project targets macOS 12 or later, including an Intel build intended for macOS 15. GitHub Actions compiles the release and checks the architecture of the app and its bundled helper. Physical Mac playback and VibePollo integration still need hands-on testing.
 
+## 🔎 Can't see your host?
+
+1. In macOS **System Settings → Privacy & Security → Local Network**, allow **MoonMac Vibe** if it appears. Version 0.1.2 declares local-network access and the `_nvstream._tcp` Bonjour service used for host discovery. Relaunch the app after changing access.
+2. Make sure VibePollo is running with streaming and `enable_discovery` enabled. Put the Mac and host on the same local network; guest Wi-Fi isolation and some VPNs can prevent Bonjour discovery.
+3. Use **+ → Add Host Manually** in the host browser and enter the host computer's LAN IP address, such as `192.168.1.10`. **Do not enter the stats Web UI URL or its port `47990` here.** The streaming client contacts VibePollo's GameStream service, normally on port `47989`; the Web UI address belongs in the separate stats window.
+4. If manual add fails too, verify the host's streaming service and firewall allow connections from the Mac. Include the exact error and a sanitized **Settings → App → Debug Log** when reporting the problem.
+
 ## 📊 Plug in VibePollo stats
 
 1. Enable the VibePollo Web UI and make its **HTTPS** address reachable from your Mac. Its usual HTTPS port is `47990`.
