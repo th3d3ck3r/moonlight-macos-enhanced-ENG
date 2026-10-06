@@ -1078,7 +1078,7 @@ enum DebugLogParser {
         return .init(title: "Resolved Host Address", detail: "\(captures[0]) → \(captures[1])")
       }
       if let captures = captures(in: message, pattern: #"Discovery summary for\s+([^:]+):\s*(.+)$"#), captures.count >= 2 {
-        return .init(title: "Host Probe Result", detail: "\(captures[0])：\(captures[1])")
+        return .init(title: "Host Probe Result", detail: "\(captures[0]): \(captures[1])")
       }
       if let host = firstCapture(in: message, pattern: #"Found service:\s+.+\.\s([^ ]+)\s+-?\d+$"#) {
         return .init(title: "Discovered a Service", detail: host)

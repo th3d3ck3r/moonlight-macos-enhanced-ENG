@@ -21,7 +21,7 @@ LITERAL = re.compile(r'"((?:\\.|[^"\\])*)"')
 def audit_source():
     errors = []
     for p in (ROOT / 'Limelight').rglob('*'):
-        if not p.is_file() or p.suffix not in {'.swift', '.m', '.h', '.strings', '.storyboard', '.plist'}:
+        if not p.is_file() or p.suffix not in {'.swift', '.m', '.h', '.strings', '.storyboard', '.xib', '.plist'}:
             continue
         rel = p.relative_to(ROOT).as_posix()
         # Source comments may describe upstream internals in another language.
