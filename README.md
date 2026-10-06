@@ -9,14 +9,14 @@
 [![Build validation](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/workflows/rebuild-validation.yml/badge.svg?branch=rebuild-moonlight-6.2-english-manual)](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/workflows/rebuild-validation.yml)
 [![Moonlight PC reference](https://img.shields.io/badge/Moonlight_PC-6.2.0-blue)](https://github.com/moonlight-stream/moonlight-qt/releases/tag/v6.2.0)
 ![Intel and Universal](https://img.shields.io/badge/macOS-Intel_%2B_Universal-silver)
-![Release channel](https://img.shields.io/badge/channel-Testing-orange)
+![Release channel](https://img.shields.io/badge/channel-Release-green)
 [![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE.txt)
 
 **A native AppKit / SwiftUI Moonlight client for Sunshine and Foundation Sunshine.**
 
 Built with the protocol core used by **Moonlight PC v6.2.0 — the latest official Moonlight PC release as of October 6, 2026** — plus selected improvements reimplemented for native macOS. Enhanced microphone, clipboard and audio extensions are retained.
 
-**🫧 Liquid Glass is coming:** a native Tahoe UI refresh is planned. It is not included in this prerelease, and no release date is promised.
+**🫧 Liquid Glass is coming:** a native Tahoe UI refresh is planned. It is not included in this release, and no release date is promised.
 
 [⬇️ Downloads](#-downloads) · [✨ Features](#-features) · [🚀 Getting started](#-getting-started) · [🧪 Validation](#-validation)
 
@@ -28,14 +28,14 @@ Built with the protocol core used by **Moonlight PC v6.2.0 — the latest offici
 
 **Manual updates only:** this separate package contains no automatic app updater or upstream update feed. About and welcome links point to this maintained fork. The clean baseline already had no automatic updater; this variant makes that policy explicit and checks it during packaging. Install future versions manually.
 
-**Testing release:** the native 6.2 rebuild for Intel macOS Tahoe. This rebuild does not yet have a stable release.
+**Release:** the native 6.2 rebuild for Intel macOS Tahoe. Intel-only and Universal packages passed full build validation; live streaming still needs physical Mac testing.
 
 | Your Mac | Download |
 |---|---|
 | **Intel — recommended for Intel Macs** | [Moonlight-manual-x86_64.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-manual-1/Moonlight-manual-x86_64.zip) |
 | **Intel + Apple Silicon** | [Moonlight-manual-universal.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-manual-1/Moonlight-manual-universal.zip) |
 
-[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-1) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases)
+[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-1) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/MANUAL_SHA256SUMS.txt)
 
 > These packages are not Developer ID signed or notarized. macOS may require **System Settings → Privacy & Security → Open Anyway**. Privileged AWDL helper authorization has not been validated with a Developer ID signature.
 
@@ -99,11 +99,13 @@ Shortcuts can be changed in **Settings → Input → Keyboard**. Free Mouse is u
 
 A native Tahoe UI refresh is planned: polished Settings, clearer sidebars/toolbars/popovers, cleaner cards, and better spacing, typography and icons. Glass will be used selectively where it helps the interface.
 
-**Status: planned.** This release focuses on protocol integration, Intel compatibility, English UI and build validation. Liquid Glass is not implemented in this prerelease.
+**Status: planned.** This release focuses on protocol integration, Intel compatibility, English UI and build validation. Liquid Glass is not implemented in this release.
 
 ## 🧪 Validation
 
 The detailed [integration report](docs/MOONLIGHT_6_2_REBUILD.md) records exact upstream commits, conflict resolutions, selected native ports, exclusions, build results, warnings and the [Intel Tahoe test checklist](docs/MOONLIGHT_6_2_REBUILD.md#intel-tahoe-test-checklist).
+
+**Intel-only and Universal full builds passed** in [the manual variant validation run](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37530026373), including the source/bundle update-policy checks. The Intel package was cross-compiled with an explicit x86_64 target on the Tahoe Apple Silicon runner; physical Intel streaming remains untested.
 
 Automated checks cover full Intel/Universal application builds, executable/helper architecture checks, recursive submodule checkout, English/LAN bundle declarations, common-c FEC/crypto/input boundaries, and the production host XML parsers.
 
