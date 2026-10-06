@@ -27,6 +27,10 @@ No earlier discarded customization was restored.
 | `f70e85a34ed6053c66754142a16d08d4310b2eca` | Fall back to SDR when Intel hardware or host cannot supply HDR |
 | `a5020149c4d09e589786653442240ff8b35fe65a` | Publish opt-in prereleases only after both native build validations pass |
 | `41e69bc0fc592377595b33c119e72bf21514d10b` | Test native XML parsers against malformed and entity-bearing host responses |
+| `8720ad5d74973b03a541b32a2ce032f2247a6e54` | Fix clipboard block ownership warnings and group decoder fallback with renderer settings |
+| `ab511153ccd7e1cbf0552ab935f125ec2841bc97` | Correct lipo architecture validation argument order |
+| `2053116ab3c02d71f9855a544949559aa0ced499` | Record integration review and enable tested prerelease publication |
+| `5e3bf0575505f8257b27cdf0fd7faafd5a8e4d77` | Build explicit x86_64 targets on the working Tahoe runner |
 
 ## Common-c integration
 
@@ -122,7 +126,11 @@ Recognition-only Chinese literals remain internally for detecting OS error messa
 - Test coverage: NVIDIA 4+2 audio FEC recovery, 8+4 video FEC recovery, AES-GCM round trip and tamper rejection, null-safe crypto cleanup, uninitialized context rejection and touchpad packet layout.
 - Tahoe Intel and Apple Silicon runners: native host XML regression tests passed using the actual production HttpResponse/AppListResponse sources with only model/database/logging boundaries stubbed. Cases cover malformed input, DTD/internal/external entities, parser reuse/status reset, empty app titles and invalid/missing IDs.
 - Fresh recursive clone from the public maintained repositories passed; common-c, ENet and nanors checked out their expected gitlinks.
-- Source English/Local Network audit passed. Full app/bundle results and Xcode warning review will be recorded after completion.
+- Source English/Local Network audit passed. The Universal build and its main/helper x86_64 + arm64 architecture checks passed in [run 37525760627](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37525760627). Final [run 37528656903](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37528656903) passed both complete Release application builds, common-c/production XML tests, English/LAN source and bundle audits, and main/helper architecture checks. Release source commit: `5e3bf0575505f8257b27cdf0fd7faafd5a8e4d77`; tag: [`native-6.2-rebuild-5`](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-5).
+- The native Intel Tahoe runner passed common-c and XML tests, but its full application build stopped progressing at Interface Builder compilation and was canceled after more than 20 minutes. The release workflow now uses an Apple Silicon Tahoe runner with an explicit x86_64 target for the Intel-only package. This is cross-compilation, not a successful full build on an Intel runner or physical Intel streaming test.
+- **Actually built:** Intel-only `ARCHS=x86_64` and Universal `ARCHS="x86_64 arm64"`, both with `ONLY_ACTIVE_ARCH=NO`, Xcode 26.6 (17F113), macOS 26.6.2 runner and SDK 26.5. Both main executable and AWDL helper have the expected slices. Deployment target remains macOS 12.
+- Remaining warnings: upstream ENet mixes command/flag enum types at `host.c:247/467`; the platform-guarded `win32.o` has no symbols; no signing identity is available for the AWDL helper; AppIntents metadata extraction is skipped because no AppIntents framework is used. Native clipboard ownership and bitmap enum warnings were fixed.
+- Released applications are not Developer ID signed or notarized. The AWDL helper is ad-hoc signed by its build script; installation/authorization remains untested.
 - No live host tests have yet been performed. Discovery, pairing, app lists from a real host, stream start/stop/reconnect, input/controller, codecs/hardware decoding, audio, microphone, clipboard, pacing/HDR/color fidelity and settings persistence remain unverified at runtime.
 - MbedTLS PSA, NXDK/3DS, other operating systems, signing/notarization and privileged-helper authorization were not tested.
 
