@@ -64,8 +64,8 @@ jobs:
         run: |
           app=build/Build/Products/Release/Moonlight.app
           for arch in ${{ matrix.archs }}; do
-            lipo -verify_arch "$arch" "$app/Contents/MacOS/Moonlight"
-            lipo -verify_arch "$arch" "$app/Contents/Library/LaunchServices/std.skyhua.MoonlightMac.AwdlPrivilegedHelper"
+            lipo "$app/Contents/MacOS/Moonlight" -verify_arch "$arch"
+            lipo "$app/Contents/Library/LaunchServices/std.skyhua.MoonlightMac.AwdlPrivilegedHelper" -verify_arch "$arch"
           done
           python3 scripts/audit_english.py --app "$app"
           ditto -c -k --sequesterRsrc --keepParent "$app" 'Moonlight-${{ matrix.variant }}.zip'
