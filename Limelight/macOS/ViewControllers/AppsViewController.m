@@ -833,6 +833,10 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
         NSString *uniqueId = [IdManager getUniqueId];
 
         HttpManager *hMan = [[HttpManager alloc] initWithHost:app.host.activeAddress uniqueId:uniqueId serverCert:app.host.serverCert];
+        ServerInfoResponse *identityResponse = [[ServerInfoResponse alloc] init];
+        [hMan executeRequestSynchronously:[HttpRequest requestForResponse:identityResponse
+            withUrlRequest:[hMan newServerInfoRequest:NO]
+            fallbackError:401 fallbackRequest:[hMan newHttpServerInfoRequest]]];
         HttpResponse *quitResponse = [[HttpResponse alloc] init];
         HttpRequest *quitRequest = [HttpRequest requestForResponse:quitResponse withUrlRequest:[hMan newQuitAppRequest]];
         

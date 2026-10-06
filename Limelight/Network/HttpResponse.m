@@ -9,6 +9,7 @@
 #import "HttpResponse.h"
 #import "TemporaryApp.h"
 #import <libxml2/libxml/xmlreader.h>
+#include <limits.h>
 
 @implementation HttpResponse {
     NSMutableDictionary* _elements;
@@ -40,12 +41,27 @@
 
 - (void) parseData {
     _elements = [[NSMutableDictionary alloc] init];
-    xmlDocPtr docPtr = xmlParseMemory([self.data bytes], (int)[self.data length]);
+    self.statusCode = 0;
+    self.statusMessage = @"Invalid host response";
+    if (self.data.length == 0 || self.data.length > INT_MAX) {
+        Log(LOG_W, @"Empty or oversized host XML response");
+        return;
+    }
+    xmlDocPtr docPtr = xmlReadMemory(self.data.bytes, (int)self.data.length,
+        NULL, NULL, XML_PARSE_NONET);
+
     if (docPtr == NULL) {
-        Log(LOG_W, @"An error occured trying to parse xml.");
+        Log(LOG_W, @"Unable to parse host XML response.");
         return;
     }
     
+    // GameStream responses do not use DTDs. Reject entity declarations and
+    // external subsets rather than expanding untrusted host XML.
+    if (docPtr->intSubset != NULL || docPtr->extSubset != NULL) {
+        Log(LOG_W, @"Rejected host XML containing a DTD");
+        xmlFreeDoc(docPtr);
+        return;
+    }
     xmlNodePtr node = xmlDocGetRootElement(docPtr);
     if (node == NULL) {
         Log(LOG_W, @"No root XML element.");
@@ -74,6 +90,10 @@
     node = node->children;
     
     while (node != NULL) {
+        if (node->type != XML_ELEMENT_NODE) {
+            node = node->next;
+            continue;
+        }
         xmlChar* nodeVal = xmlNodeListGetString(docPtr, node->xmlChildrenNode, 1);
         
         NSString* value;
@@ -83,7 +103,9 @@
             value = [[NSString alloc] initWithCString:(const char*)nodeVal encoding:NSUTF8StringEncoding];
         }
         NSString* key = [[NSString alloc] initWithCString:(const char*)node->name encoding:NSUTF8StringEncoding];
-        [_elements setObject:value forKey:key];
+        if (key != nil && value != nil) {
+            [_elements setObject:value forKey:key];
+        }
         xmlFree(nodeVal);
         node = node->next;
     }

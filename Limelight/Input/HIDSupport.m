@@ -19,6 +19,25 @@ struct KeyMapping {
     short windows;
 };
 
+// Sunshine's extended-key flag distinguishes keypad Enter and right-hand
+// modifiers. common-c strips it automatically for NVIDIA GameStream hosts.
+static char HIDExtendedKeyModifier(short remoteKeyCode) {
+    switch ((unsigned short)remoteKeyCode & 0xFF) {
+        case 0x21: case 0x22: case 0x23: case 0x24: // Page/Home/End
+        case 0x25: case 0x26: case 0x27: case 0x28: // Arrows
+        case 0x2C: case 0x2D: case 0x2E: // Print Screen/Insert/Delete
+        case 0x5B: case 0x5C: case 0x5D: // Windows/Menu
+        case 0x6F: case 0xA3: case 0xA5: // Divide/Right Ctrl/Right Alt
+            return MODIFIER_EXTENDED;
+        default:
+            return 0;
+    }
+}
+
+static int HIDSendKeyboardEvent(PML_INPUT_STREAM_CONTEXT ctx, short keyCode, char action, char modifiers) {
+    return LiSendKeyboardEventCtx(ctx, keyCode, action, modifiers | HIDExtendedKeyModifier(keyCode));
+}
+
 static struct KeyMapping keys[] = {
     {kVK_ANSI_A, 'A'},
     {kVK_ANSI_B, 'B'},
@@ -343,8 +362,8 @@ static void HIDDispatchSyntheticRemoteModifierTap(HIDSupport *support,
 
             unsigned short modifierKeyCode = HIDRemoteModifierKeyCode(mask);
             if (modifierKeyCode != 0) {
-                LiSendKeyboardEventCtx(inputCtx, modifierKeyCode, KEY_ACTION_DOWN, translatedModifiers);
-                LiSendKeyboardEventCtx(inputCtx, modifierKeyCode, KEY_ACTION_UP, 0);
+                HIDSendKeyboardEvent(inputCtx, modifierKeyCode, KEY_ACTION_DOWN, translatedModifiers);
+                HIDSendKeyboardEvent(inputCtx, modifierKeyCode, KEY_ACTION_UP, 0);
             }
         }
     });
@@ -945,7 +964,7 @@ static void HIDDispatchSyntheticRemoteModifierTap(HIDSupport *support,
             }
 
             char action = (desired & mask) != 0 ? KEY_ACTION_DOWN : KEY_ACTION_UP;
-            LiSendKeyboardEventCtx(inputCtx, keyCode, action, modifiers);
+            HIDSendKeyboardEvent(inputCtx, keyCode, action, modifiers);
         }
     });
 }
@@ -960,37 +979,49 @@ static void HIDDispatchSyntheticRemoteModifierTap(HIDSupport *support,
 }
 
 - (void)keyDown:(NSEvent *)event {
-    if (self.shouldSendInputEvents) {
-        [self syncKeyboardModifierStateForEvent:event];
-        short keyCode = 0x8000 | [self translateKeyCodeWithEvent:event];
-        char modifiers = [self translateKeyModifierWithEvent:event];
-        PML_INPUT_STREAM_CONTEXT inputCtx = HIDInputContext(self);
-        if (!HIDValidateInputContext(inputCtx, "keyDown")) {
-            return;
-        }
-        HIDDispatchInput(self, inputCtx, ^{
-            LiSendKeyboardEventCtx(inputCtx, keyCode, KEY_ACTION_DOWN, modifiers);
-        });
-    }
+    if (!self.shouldSendInputEvents) return;
+    [self syncKeyboardModifierStateForEvent:event];
+    PML_INPUT_STREAM_CONTEXT inputCtx = HIDInputContext(self);
+    if (!HIDValidateInputContext(inputCtx, "keyDown")) return;
+    short keyCode = 0x8000 | [self translateKeyCodeWithEvent:event];
+    char modifiers = [self translateKeyModifierWithEvent:event] | HIDExtendedKeyModifier(keyCode);
+    if (event.keyCode == kVK_ANSI_KeypadEnter) modifiers |= MODIFIER_EXTENDED;
+    if (!self.keyboardKeysDown) self.keyboardKeysDown = [NSMutableDictionary dictionary];
+    NSNumber *physicalKey = @(event.keyCode);
+    NSNumber *held = self.keyboardKeysDown[physicalKey];
+    uint32_t state = held ? held.unsignedIntValue :
+        (uint16_t)keyCode | ((uint32_t)(uint8_t)(modifiers & MODIFIER_EXTENDED) << 16);
+    self.keyboardKeysDown[physicalKey] = @(state);
+    keyCode = (short)(state & 0xFFFF);
+    modifiers = (modifiers & ~MODIFIER_EXTENDED) | (char)((state >> 16) & 0xFF);
+    HIDDispatchInput(self, inputCtx, ^{
+        HIDSendKeyboardEvent(inputCtx, keyCode, KEY_ACTION_DOWN, modifiers);
+    });
 }
 
 - (void)keyUp:(NSEvent *)event {
-    if (self.shouldSendInputEvents) {
-        [self syncKeyboardModifierStateForEvent:event];
-        short keyCode = 0x8000 | [self translateKeyCodeWithEvent:event];
-        char modifiers = [self translateKeyModifierWithEvent:event];
-        PML_INPUT_STREAM_CONTEXT inputCtx = HIDInputContext(self);
-        if (!HIDValidateInputContext(inputCtx, "keyUp")) {
-            return;
-        }
-        HIDDispatchInput(self, inputCtx, ^{
-            LiSendKeyboardEventCtx(inputCtx, keyCode, KEY_ACTION_UP, modifiers);
-        });
-    }
+    if (!self.shouldSendInputEvents) return;
+    [self syncKeyboardModifierStateForEvent:event];
+    PML_INPUT_STREAM_CONTEXT inputCtx = HIDInputContext(self);
+    if (!HIDValidateInputContext(inputCtx, "keyUp")) return;
+    NSNumber *physicalKey = @(event.keyCode);
+    NSNumber *held = self.keyboardKeysDown[physicalKey];
+    short keyCode = held ? (short)(held.unsignedIntValue & 0xFFFF) :
+        0x8000 | [self translateKeyCodeWithEvent:event];
+    char extended = held ? (char)((held.unsignedIntValue >> 16) & 0xFF) :
+        HIDExtendedKeyModifier(keyCode);
+    if (event.keyCode == kVK_ANSI_KeypadEnter) extended |= MODIFIER_EXTENDED;
+    char modifiers = [self translateKeyModifierWithEvent:event] | extended;
+    [self.keyboardKeysDown removeObjectForKey:physicalKey];
+    HIDDispatchInput(self, inputCtx, ^{
+        HIDSendKeyboardEvent(inputCtx, keyCode, KEY_ACTION_UP, modifiers);
+    });
 }
 
 - (void)releaseAllModifierKeys {
     // Send asynchronously to avoid blocking the main thread if the connection is dead
+    NSArray<NSNumber *> *heldKeys = self.keyboardKeysDown.allValues ?: @[];
+    [self.keyboardKeysDown removeAllObjects];
     self.keyboardPhysicalModifierSourceMask = 0;
     self.keyboardRemoteModifierMask = 0;
     self.keyboardDeferredShortcutTranslationCommandMask = 0;
@@ -999,14 +1030,19 @@ static void HIDDispatchSyntheticRemoteModifierTap(HIDSupport *support,
         return;
     }
     HIDDispatchInput(self, inputCtx, ^{
-        LiSendKeyboardEventCtx(inputCtx, 0x5B, KEY_ACTION_UP, 0);
-        LiSendKeyboardEventCtx(inputCtx, 0x5C, KEY_ACTION_UP, 0);
-        LiSendKeyboardEventCtx(inputCtx, 0xA0, KEY_ACTION_UP, 0);
-        LiSendKeyboardEventCtx(inputCtx, 0xA1, KEY_ACTION_UP, 0);
-        LiSendKeyboardEventCtx(inputCtx, 0xA2, KEY_ACTION_UP, 0);
-        LiSendKeyboardEventCtx(inputCtx, 0xA3, KEY_ACTION_UP, 0);
-        LiSendKeyboardEventCtx(inputCtx, 0xA4, KEY_ACTION_UP, 0);
-        LiSendKeyboardEventCtx(inputCtx, 0xA5, KEY_ACTION_UP, 0);
+        for (NSNumber *held in heldKeys) {
+            uint32_t state = held.unsignedIntValue;
+            HIDSendKeyboardEvent(inputCtx, (short)(state & 0xFFFF), KEY_ACTION_UP,
+                (char)((state >> 16) & 0xFF));
+        }
+        HIDSendKeyboardEvent(inputCtx, 0x5B, KEY_ACTION_UP, 0);
+        HIDSendKeyboardEvent(inputCtx, 0x5C, KEY_ACTION_UP, 0);
+        HIDSendKeyboardEvent(inputCtx, 0xA0, KEY_ACTION_UP, 0);
+        HIDSendKeyboardEvent(inputCtx, 0xA1, KEY_ACTION_UP, 0);
+        HIDSendKeyboardEvent(inputCtx, 0xA2, KEY_ACTION_UP, 0);
+        HIDSendKeyboardEvent(inputCtx, 0xA3, KEY_ACTION_UP, 0);
+        HIDSendKeyboardEvent(inputCtx, 0xA4, KEY_ACTION_UP, 0);
+        HIDSendKeyboardEvent(inputCtx, 0xA5, KEY_ACTION_UP, 0);
     });
 }
 
@@ -1115,12 +1151,12 @@ static void HIDDispatchSyntheticRemoteModifierTap(HIDSupport *support,
 
             unsigned short modifierKeyCode = HIDRemoteModifierKeyCode(mask);
             if (modifierKeyCode != 0) {
-                LiSendKeyboardEventCtx(inputCtx, modifierKeyCode, KEY_ACTION_DOWN, translatedModifiers);
+                HIDSendKeyboardEvent(inputCtx, modifierKeyCode, KEY_ACTION_DOWN, translatedModifiers);
             }
         }
 
-        LiSendKeyboardEventCtx(inputCtx, translatedKeyCode, KEY_ACTION_DOWN, translatedModifiers);
-        LiSendKeyboardEventCtx(inputCtx, translatedKeyCode, KEY_ACTION_UP, translatedModifiers);
+        HIDSendKeyboardEvent(inputCtx, translatedKeyCode, KEY_ACTION_DOWN, translatedModifiers);
+        HIDSendKeyboardEvent(inputCtx, translatedKeyCode, KEY_ACTION_UP, translatedModifiers);
 
         for (NSInteger i = (NSInteger)(sizeof(remoteOrder) / sizeof(remoteOrder[0])) - 1; i >= 0; i--) {
             HIDKeyboardRemoteModifierMask mask = remoteOrder[(NSUInteger)i];
@@ -1130,7 +1166,7 @@ static void HIDDispatchSyntheticRemoteModifierTap(HIDSupport *support,
 
             unsigned short modifierKeyCode = HIDRemoteModifierKeyCode(mask);
             if (modifierKeyCode != 0) {
-                LiSendKeyboardEventCtx(inputCtx, modifierKeyCode, KEY_ACTION_UP, 0);
+                HIDSendKeyboardEvent(inputCtx, modifierKeyCode, KEY_ACTION_UP, 0);
             }
         }
     });

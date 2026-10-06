@@ -71,6 +71,7 @@
 @property (nonatomic, strong) CoreHIDMouseDriver *coreHIDMouseDriver;
 @property (nonatomic) BOOL coreHIDMouseDidDeliverMovement;
 @property (nonatomic) BOOL coreHIDMouseRuntimeFailed;
+@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSNumber *> *keyboardKeysDown;
 @property (nonatomic) NSUInteger keyboardPhysicalModifierSourceMask;
 @property (nonatomic) NSUInteger keyboardRemoteModifierMask;
 @property (nonatomic) NSUInteger keyboardDeferredShortcutTranslationCommandMask;

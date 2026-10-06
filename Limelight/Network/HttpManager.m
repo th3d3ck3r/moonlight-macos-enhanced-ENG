@@ -265,6 +265,18 @@ static const NSString* HTTPS_PORT = @"47984";
 
     if (!_error && request.response) {
         [request.response populateWithData:requestResp];
+        // Official 6.2 uses the real UID for Sunshine-compatible hosts, while
+        // retaining the historical shared session ID for NVIDIA GameStream.
+        if (IsServerInfoRequest(request.request.URL) &&
+            [request.response isKindOfClass:[ServerInfoResponse class]] &&
+            request.response.statusCode == 200) {
+            NSString *serverState = [(ServerInfoResponse *)request.response getStringTag:TAG_STATE];
+            if (serverState.length > 0) {
+                _sharedStreamUniqueId = [serverState containsString:@"MJOLNIR"]
+                    ? kSharedStreamSessionUniqueId : _clientUniqueId;
+            }
+        }
+
         
         // If the fallback error code was detected, issue the fallback request
         if (request.response.statusCode == request.fallbackError && request.fallbackRequest != NULL) {

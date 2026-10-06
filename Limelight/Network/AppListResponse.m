@@ -10,6 +10,7 @@
 #import "TemporaryApp.h"
 #import "DataManager.h"
 #import <libxml2/libxml/xmlreader.h>
+#include <limits.h>
 
 @implementation AppListResponse {
     NSMutableSet* _appList;
@@ -29,12 +30,27 @@ static const char* TAG_APP_INSTALL_PATH = "AppInstallPath";
 }
 
 - (void) parseData {
-    xmlDocPtr docPtr = xmlParseMemory([self.data bytes], (int)[self.data length]);
+    self.statusCode = 0;
+    self.statusMessage = @"Invalid host response";
+    if (self.data.length == 0 || self.data.length > INT_MAX) {
+        Log(LOG_W, @"Empty or oversized host XML response");
+        return;
+    }
+    xmlDocPtr docPtr = xmlReadMemory(self.data.bytes, (int)self.data.length,
+        NULL, NULL, XML_PARSE_NONET);
+
     if (docPtr == NULL) {
-        Log(LOG_W, @"An error occured trying to parse xml.");
+        Log(LOG_W, @"Unable to parse host XML response.");
         return;
     }
     
+    // GameStream responses do not use DTDs. Reject entity declarations and
+    // external subsets rather than expanding untrusted host XML.
+    if (docPtr->intSubset != NULL || docPtr->extSubset != NULL) {
+        Log(LOG_W, @"Rejected host XML containing a DTD");
+        xmlFreeDoc(docPtr);
+        return;
+    }
     xmlNodePtr node = xmlDocGetRootElement(docPtr);
     if (node == NULL) {
         Log(LOG_W, @"No root XML element.");
@@ -99,9 +115,9 @@ static const char* TAG_APP_INSTALL_PATH = "AppInstallPath";
 
                 appInfoNode = appInfoNode->next;
             }
-            if (appId != nil) {
+            if (appId.length > 0 && appId.integerValue > 0) {
                 TemporaryApp* app = [[TemporaryApp alloc] init];
-                app.name = appName;
+                app.name = appName ?: @"";
                 app.id = appId;
                 app.hdrSupported = [hdrSupported intValue] != 0;
                 app.installPath = appInstallPath;
