@@ -8,6 +8,7 @@
 
 #import "HttpManager.h"
 #import "HttpRequest.h"
+#import "ServerInfoResponse.h"
 #import "CryptoManager.h"
 #import "TemporaryApp.h"
 #import "Moonlight-Swift.h"
@@ -170,8 +171,8 @@ static const NSString* HTTPS_PORT = @"47984";
     // Use a per-client ID for pairing/discovery so different Moonlight installs
     // don't overwrite each other's pairing state on the host.
     _clientUniqueId = uniqueId.length > 0 ? uniqueId : kSharedStreamSessionUniqueId;
-    // Keep the historical shared stream session ID so another Moonlight client
-    // can still stop a session started elsewhere.
+    // Use the legacy session ID until a valid serverinfo response identifies
+    // Sunshine. NVIDIA hosts retain this ID for session interoperability.
     _sharedStreamUniqueId = kSharedStreamSessionUniqueId;
     _deviceName = deviceName;
     _serverCert = serverCert;
