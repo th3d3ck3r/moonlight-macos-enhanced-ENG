@@ -1,0 +1,43 @@
+name: Publish Regular GitHub Releases
+on:
+  push:
+    branches: [rebuild-moonlight-6.2-english]
+    paths:
+      - .github/workflows/publish-release.yml
+      - docs/RELEASE_NOTES.md
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - name: Publish validated rebuild as a regular release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(gh api repos/$GH_REPO/actions/runs/37528656903 --jq .conclusion)" = success
+          test "$(gh api repos/$GH_REPO/git/ref/tags/native-6.2-rebuild-5 --jq .object.sha)" = 5e3bf0575505f8257b27cdf0fd7faafd5a8e4d77
+          gh release edit native-6.2-rebuild-5 --prerelease=false --latest \
+            --title 'Moonlight Enhanced English — Intel/Tahoe 6.2 Rebuild' \
+            --notes-file docs/RELEASE_NOTES.md
+      - name: Publish manual-update release after its validation completes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 72); do
+            if gh release view native-6.2-manual-1 >/dev/null 2>&1; then break; fi
+            sleep 10
+          done
+          test "$(gh api repos/$GH_REPO/actions/runs/37530026373 --jq .conclusion)" = success
+          test "$(gh api repos/$GH_REPO/git/ref/tags/native-6.2-manual-1 --jq .object.sha)" = bbe2973bb5ac3225a3a0023386dc4cd347c3414c
+          printf '%s\n\n' '**Separate manual-update-only build.** No automatic app updater or upstream update feed is included. About/welcome links point to the maintained fork. The clean baseline already had no updater; this variant labels the policy and audits source and packaged bundles. Install future versions manually.' > /tmp/manual-release-notes.md
+          cat docs/RELEASE_NOTES.md | sed 's/Moonlight-x86_64.zip/Moonlight-manual-x86_64.zip/g; s/Moonlight-universal.zip/Moonlight-manual-universal.zip/g; s/rebuild-moonlight-6.2-english\//rebuild-moonlight-6.2-english-manual\//g' >> /tmp/manual-release-notes.md
+          gh release edit native-6.2-manual-1 --prerelease=false --latest=false \
+            --title 'Moonlight Enhanced English — Manual Updates Only' \
+            --notes-file /tmp/manual-release-notes.md

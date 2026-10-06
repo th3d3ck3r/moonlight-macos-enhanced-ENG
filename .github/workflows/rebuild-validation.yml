@@ -10,6 +10,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+    if: github.event_name != 'push' || !contains(github.event.head_commit.message, '[release-metadata]')
     name: macOS ${{ matrix.variant }}
     strategy:
       fail-fast: false

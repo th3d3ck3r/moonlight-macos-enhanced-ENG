@@ -7,14 +7,14 @@
 [![Build validation](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/workflows/rebuild-validation.yml/badge.svg?branch=rebuild-moonlight-6.2-english)](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/workflows/rebuild-validation.yml)
 [![Moonlight PC reference](https://img.shields.io/badge/Moonlight_PC-6.2.0-blue)](https://github.com/moonlight-stream/moonlight-qt/releases/tag/v6.2.0)
 ![Intel and Universal](https://img.shields.io/badge/macOS-Intel_%2B_Universal-silver)
-![Release channel](https://img.shields.io/badge/channel-Testing-orange)
+![Release channel](https://img.shields.io/badge/channel-Release-green)
 [![License](https://img.shields.io/badge/license-GPLv3-blue)](LICENSE.txt)
 
 **A native AppKit / SwiftUI Moonlight client for Sunshine and Foundation Sunshine.**
 
 Built with the protocol core used by **Moonlight PC v6.2.0 — the latest official Moonlight PC release as of October 6, 2026** — plus selected improvements reimplemented for native macOS. Enhanced microphone, clipboard and audio extensions are retained.
 
-**🫧 Liquid Glass is coming:** a native Tahoe UI refresh is planned. It is not included in this prerelease, and no release date is promised.
+**🫧 Liquid Glass is coming:** a native Tahoe UI refresh is planned. It is not included in this release, and no release date is promised.
 
 [⬇️ Downloads](#-downloads) · [✨ Features](#-features) · [🚀 Getting started](#-getting-started) · [🧪 Validation](#-validation)
 
@@ -24,7 +24,7 @@ Built with the protocol core used by **Moonlight PC v6.2.0 — the latest offici
 
 ## 📦 Downloads
 
-**Testing release:** the native 6.2 rebuild for Intel macOS Tahoe. This rebuild does not yet have a stable release.
+**Release:** the native 6.2 rebuild for Intel macOS Tahoe. Intel-only and Universal packages passed full build validation; live streaming still needs physical Mac testing.
 
 | Your Mac | Download |
 |---|---|
@@ -95,7 +95,7 @@ Shortcuts can be changed in **Settings → Input → Keyboard**. Free Mouse is u
 
 A native Tahoe UI refresh is planned: polished Settings, clearer sidebars/toolbars/popovers, cleaner cards, and better spacing, typography and icons. Glass will be used selectively where it helps the interface.
 
-**Status: planned.** This release focuses on protocol integration, Intel compatibility, English UI and build validation. Liquid Glass is not implemented in this prerelease.
+**Status: planned.** This release focuses on protocol integration, Intel compatibility, English UI and build validation. Liquid Glass is not implemented in this release.
 
 ## 🧪 Validation
 
