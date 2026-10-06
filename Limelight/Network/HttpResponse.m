@@ -9,6 +9,7 @@
 #import "HttpResponse.h"
 #import "TemporaryApp.h"
 #import <libxml2/libxml/xmlreader.h>
+#import "HostResponseValidation.h"
 #include <limits.h>
 
 @implementation HttpResponse {
@@ -63,18 +64,23 @@
         return;
     }
     xmlNodePtr node = xmlDocGetRootElement(docPtr);
-    if (node == NULL) {
-        Log(LOG_W, @"No root XML element.");
+    if (node == NULL || xmlStrcmp(node->name, (const xmlChar *)"root") != 0) {
+        Log(LOG_W, @"Missing or unexpected host XML root element.");
         xmlFreeDoc(docPtr);
         return;
     }
 
     xmlChar* statusStr = xmlGetProp(node, (const xmlChar*)[TAG_STATUS_CODE UTF8String]);
-    if (statusStr != NULL) {
-        int status = [[NSString stringWithUTF8String:(const char*)statusStr] intValue];
-        xmlFree(statusStr);
-        self.statusCode = status;
+    NSInteger status = 0;
+    BOOL validStatus = statusStr != NULL && MLParseHostDecimal(
+        [NSString stringWithUTF8String:(const char *)statusStr], INT_MAX, &status);
+    xmlFree(statusStr);
+    if (!validStatus) {
+        Log(LOG_W, @"Invalid host XML status code");
+        xmlFreeDoc(docPtr);
+        return;
     }
+    self.statusCode = status;
     
     xmlChar* statusMsgXml = xmlGetProp(node, (const xmlChar*)[TAG_STATUS_MESSAGE UTF8String]);
     NSString* statusMsg;

@@ -10,6 +10,7 @@
 #import "TemporaryApp.h"
 #import "DataManager.h"
 #import <libxml2/libxml/xmlreader.h>
+#import "HostResponseValidation.h"
 #include <limits.h>
 
 @implementation AppListResponse {
@@ -52,18 +53,23 @@ static const char* TAG_APP_INSTALL_PATH = "AppInstallPath";
         return;
     }
     xmlNodePtr node = xmlDocGetRootElement(docPtr);
-    if (node == NULL) {
-        Log(LOG_W, @"No root XML element.");
+    if (node == NULL || xmlStrcmp(node->name, (const xmlChar *)"root") != 0) {
+        Log(LOG_W, @"Missing or unexpected host XML root element.");
         xmlFreeDoc(docPtr);
         return;
     }
     
     xmlChar* statusStr = xmlGetProp(node, (const xmlChar*)[TAG_STATUS_CODE UTF8String]);
-    if (statusStr != NULL) {
-        int status = [[NSString stringWithUTF8String:(const char*)statusStr] intValue];
-        xmlFree(statusStr);
-        self.statusCode = status;
+    NSInteger status = 0;
+    BOOL validStatus = statusStr != NULL && MLParseHostDecimal(
+        [NSString stringWithUTF8String:(const char *)statusStr], INT_MAX, &status);
+    xmlFree(statusStr);
+    if (!validStatus) {
+        Log(LOG_W, @"Invalid host XML status code");
+        xmlFreeDoc(docPtr);
+        return;
     }
+    self.statusCode = status;
     
     xmlChar* statusMsgXml = xmlGetProp(node, (const xmlChar*)[TAG_STATUS_MESSAGE UTF8String]);
     NSString* statusMsg;
@@ -115,10 +121,11 @@ static const char* TAG_APP_INSTALL_PATH = "AppInstallPath";
 
                 appInfoNode = appInfoNode->next;
             }
-            if (appId.length > 0 && appId.integerValue > 0) {
+            NSInteger numericAppId = 0;
+            if (MLParseHostDecimal(appId, INT_MAX, &numericAppId) && numericAppId > 0) {
                 TemporaryApp* app = [[TemporaryApp alloc] init];
                 app.name = appName ?: @"";
-                app.id = appId;
+                app.id = [appId stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceAndNewlineCharacterSet];
                 app.hdrSupported = [hdrSupported intValue] != 0;
                 app.installPath = appInstallPath;
                 [_appList addObject:app];
