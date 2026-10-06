@@ -1,0 +1,71 @@
+name: Validate Native 6.2 Rebuild
+on:
+  push:
+    branches: [rebuild-moonlight-6.2-english]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: native-rebuild-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    name: macOS ${{ matrix.variant }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: x86_64
+            runner: macos-26-intel
+            archs: x86_64
+          - variant: universal
+            runner: macos-26
+            archs: x86_64 arm64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+          fetch-depth: 0
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest
+      - name: Audit English UI and LAN configuration
+        run: python3 scripts/audit_english.py
+      - name: Build and test customized common-c
+        run: |
+          cmake -S moonlight-common/moonlight-common-c -B common-test -DCMAKE_BUILD_TYPE=Debug
+          cmake --build common-test --parallel 3
+          ctest --test-dir common-test --output-on-failure
+      - name: Download native dependencies
+        run: |
+          curl --fail --location --retry 3 -o xcframeworks.zip https://github.com/coofdy/moonlight-mobile-deps/releases/download/latest/moonlight-apple-xcframeworks.zip
+          unzip -q -o xcframeworks.zip -d xcframeworks
+      - name: Build full macOS application
+        shell: bash
+        run: |
+          set -o pipefail
+          xcodebuild -version
+          xcodebuild -project Moonlight.xcodeproj -scheme 'Moonlight for macOS' \
+            -configuration Release -derivedDataPath build -destination 'generic/platform=macOS' \
+            ARCHS='${{ matrix.archs }}' ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY='' \
+            BUILD_NUMBER='${{ github.run_number }}' build 2>&1 | tee build.log
+      - name: Validate produced application
+        shell: bash
+        run: |
+          app=build/Build/Products/Release/Moonlight.app
+          for arch in ${{ matrix.archs }}; do
+            lipo -verify_arch "$arch" "$app/Contents/MacOS/Moonlight"
+            lipo -verify_arch "$arch" "$app/Contents/Library/LaunchServices/std.skyhua.MoonlightMac.AwdlPrivilegedHelper"
+          done
+          python3 scripts/audit_english.py --app "$app"
+          ditto -c -k --sequesterRsrc --keepParent "$app" 'Moonlight-${{ matrix.variant }}.zip'
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: native-rebuild-${{ matrix.variant }}
+          path: |
+            build.log
+            Moonlight-${{ matrix.variant }}.zip
+          if-no-files-found: warn
