@@ -3016,6 +3016,9 @@ static inline NSPoint MLClampFreeMousePointToExitEdge(NSPoint point,
     [self.streamView refreshPreferredLocalCursor];
 
     [self.hidSupport releaseAllPressedMouseButtons];
+    // Every capture-release path must release keyboard state before keyUp
+    // events stop being forwarded (including edge-menu and free-mouse exits).
+    [self.hidSupport releaseAllModifierKeys];
     self.pendingMouseUncaptureAfterButtonsReleased = NO;
     self.pendingMouseUncaptureRecheckScheduled = NO;
     self.hasCoreHIDFreeMouseLastTruthPoint = NO;
