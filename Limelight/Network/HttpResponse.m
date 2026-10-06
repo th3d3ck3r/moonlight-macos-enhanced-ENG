@@ -28,12 +28,7 @@
 
 - (BOOL) getIntTag:(NSString *)tag value:(NSInteger*)value {
     NSString* stringVal = [self getStringTag:tag];
-    if (stringVal != nil) {
-        *value = [stringVal integerValue];
-        return true;
-    } else {
-        return false;
-    }
+    return MLParseHostDecimal(stringVal, INT_MAX, value);
 }
 
 - (BOOL) isStatusOk {
