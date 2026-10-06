@@ -21,6 +21,9 @@ int main(void) {
 
         NSArray<NSString *> *invalid = @[
             @"", @"not xml", @"<root>", @"<root status_code='not-a-number'/>",
+            @"<root status_code='200oops'><state>SUNSHINE_SERVER_FREE</state></root>",
+            @"<root status_code='2147483848'/>", @"<root status_code='-200'/>",
+            @"<unexpected status_code='200'><state>SUNSHINE_SERVER_FREE</state></unexpected>",
             @"<!DOCTYPE root [<!ENTITY secret SYSTEM 'file:///etc/passwd'>]><root status_code='200'><secret>&secret;</secret></root>",
             @"<!DOCTYPE root [<!ENTITY text 'hello'>]><root status_code='200'><state>&text;</state></root>",
             @"<!DOCTYPE root SYSTEM 'https://example.invalid/remote.dtd'><root status_code='200'/>"
@@ -48,6 +51,10 @@ int main(void) {
         }
         [apps populateWithData:xml(@"<bad>")];
         assert(!apps.isStatusOk && apps.getAppList.count == 0);
+        [apps populateWithData:xml(@"<root status_code=' 200 '><App><ID>12oops</ID></App><App><ID>12&amp;appid=13</ID></App><App><ID>2147483648</ID></App><App><ID>-1</ID></App><App><ID> 2147483647 </ID><AppTitle>Valid Boundary</AppTitle></App></root>")];
+        assert(apps.isStatusOk && apps.getAppList.count == 1);
+        TemporaryApp *boundaryApp = apps.getAppList.anyObject;
+        assert([boundaryApp.id isEqualToString:@"2147483647"]);
         puts("PASS: actual native host XML parsers reject malformed/DTD responses and preserve valid/empty-title apps");
     }
     return 0;
