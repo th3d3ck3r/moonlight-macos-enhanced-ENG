@@ -16,12 +16,13 @@ jobs:
       matrix:
         include:
           - variant: x86_64
-            runner: macos-26-intel
+            runner: macos-26
             archs: x86_64
           - variant: universal
             runner: macos-26
             archs: x86_64 arm64
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
         with:
