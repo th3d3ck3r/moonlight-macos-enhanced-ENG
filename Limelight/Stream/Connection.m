@@ -2741,7 +2741,7 @@ void ClClipboardItemReceived(const LI_CLIPBOARD_ITEM *item)
     __block int result = -1;
     void (^operation)(void) = ^{
         [self ensureControlContextBacklink];
-        LiSetThreadConnectionContext(&_connectionContext);
+        LiSetThreadConnectionContext(&self->_connectionContext);
         os_unfair_lock_lock(&gConnectionLifecycleLock);
         result = block();
         os_unfair_lock_unlock(&gConnectionLifecycleLock);

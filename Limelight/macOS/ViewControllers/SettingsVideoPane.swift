@@ -133,17 +133,6 @@ struct VideoView: View {
               .frame(maxWidth: .infinity, alignment: .trailing)
             })
 
-          ToggleCell(
-            title: "Use Software Decoding",
-            boolBinding: $videoDecoderPreferSoftware
-          )
-          .disabled(normalizedRendererMode == "Compatibility Renderer")
-
-          Text("Troubleshooting option for Native and Metal renderers. Applies to all hosts on the next connection. Software decoding may use significantly more CPU; Compatibility mode uses the system decoder.")
-            .font(.footnote)
-            .foregroundColor(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-
           Text(languageManager.localize(videoCodecDetailKey))
             .font(.footnote)
             .foregroundColor(.secondary)
@@ -171,6 +160,17 @@ struct VideoView: View {
             })
 
           SettingDescriptionRow(textKey: "Renderer Mode detail")
+
+          ToggleCell(
+            title: "Use Software Decoding",
+            boolBinding: $videoDecoderPreferSoftware
+          )
+          .disabled(normalizedRendererMode == "Compatibility Renderer")
+
+          Text("Troubleshooting option for Native and Metal renderers. Applies to all hosts on the next connection. Software decoding may use significantly more CPU; Compatibility mode uses the system decoder.")
+            .font(.footnote)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
           Divider()
 
