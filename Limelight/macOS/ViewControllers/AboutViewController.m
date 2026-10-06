@@ -21,8 +21,8 @@
 
 @implementation AboutViewController
 
-static NSString * const MoonlightEnhancedRepositoryURL = @"https://github.com/skyhua0224/moonlight-macos-enhanced";
-static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/skyhua0224/moonlight-macos-enhanced/blob/master/README.md";
+static NSString * const MoonlightEnhancedRepositoryURL = @"https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/tree/rebuild-moonlight-6.2-english-manual";
+static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/blob/rebuild-moonlight-6.2-english-manual/README.md";
 
 #pragma mark - Lifecycle
 
@@ -53,7 +53,8 @@ static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/skyhua
 }
 
 - (void)refreshAboutContent {
-    self.versionNumberTextField.stringValue = [Helpers versionNumberString];
+    self.versionNumberTextField.stringValue = [[Helpers versionNumberString] stringByAppendingString:@" (manual)"];
+    self.versionNumberTextField.toolTip = @"Manual updates only. Download future versions from this project’s GitHub releases.";
     self.copyrightTextField.stringValue = [Helpers copyrightString];
 
     self.githubTextFieldLink.stringValue = [[LanguageManager shared] localize:@"GitHub Repository"];
@@ -63,7 +64,7 @@ static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/skyhua
     self.creditsTextFieldLink.attributedStringValue = [self makeTextFieldLinkWithURLString:MoonlightEnhancedReadmeURL :self.creditsTextFieldLink];
 
     if (self.view.window != nil) {
-        self.view.window.title = [[LanguageManager shared] localize:@"About Moonlight macOS Enhanced"];
+        self.view.window.title = [[LanguageManager shared] localize:@"About Moonlight — Manual Updates Only"];
     }
 }
 
