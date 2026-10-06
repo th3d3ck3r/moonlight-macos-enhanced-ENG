@@ -37,17 +37,30 @@ jobs:
           python3 scripts/audit_update_isolation.py
       - name: Build and test customized common-c
         run: |
-          cmake -S moonlight-common/moonlight-common-c -B common-test -DCMAKE_BUILD_TYPE=Debug
+          cmake -S moonlight-common/moonlight-common-c -B common-test -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-omit-frame-pointer"
           cmake --build common-test --parallel 3
-          ctest --test-dir common-test --output-on-failure
+          ASAN_OPTIONS=detect_leaks=0 ctest --test-dir common-test --output-on-failure
       - name: Test native host XML security and compatibility
         run: |
-          xcrun clang -fobjc-arc -framework Foundation -lxml2 \
+          xcrun clang -fobjc-arc -fsanitize=address,undefined -fno-omit-frame-pointer -framework Foundation -lxml2 \
             -I tests/host-response -I Limelight/Network -I "$(xcrun --show-sdk-path)/usr/include/libxml2" \
             -include tests/host-response/Support.h \
             Limelight/Network/HttpResponse.m Limelight/Network/AppListResponse.m \
             tests/host-response/HostResponseTests.m -o /tmp/host-response-tests
-          /tmp/host-response-tests
+          ASAN_OPTIONS=detect_leaks=0 /tmp/host-response-tests
+      - name: Test production credential redaction
+        shell: bash
+        run: |
+          set -o pipefail
+          xcrun clang -fobjc-arc -fsanitize=address,undefined -fno-omit-frame-pointer -framework Foundation \
+            -I Limelight/Utility Limelight/Utility/Logger.m Limelight/Utility/LogBuffer.m \
+            tests/logging/LogRedactionTests.m -o /tmp/log-redaction-tests
+          ASAN_OPTIONS=detect_leaks=0 /tmp/log-redaction-tests 2>&1 | tee /tmp/log-redaction-output.txt
+          if grep -q 'SENSITIVE_.*_VALUE' /tmp/log-redaction-output.txt; then
+            echo 'Credential redaction failed for console output'
+            exit 1
+          fi
       - name: Download native dependencies
         run: |
           curl --fail --location --retry 3 -o xcframeworks.zip https://github.com/coofdy/moonlight-mobile-deps/releases/download/latest/moonlight-apple-xcframeworks.zip
@@ -81,10 +94,10 @@ jobs:
             build.log
             Moonlight-manual-${{ matrix.variant }}.zip
           if-no-files-found: warn
-  prerelease:
-    name: Publish tested rebuild prerelease
+  release:
+    name: Publish validated regular release
     needs: build
-    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[prerelease]')
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[release]')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -98,9 +111,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "native-6.2-manual-1" \
+          gh release create "native-6.2-manual-2" \
             release-artifacts/native-manual-x86_64/Moonlight-manual-x86_64.zip \
             release-artifacts/native-manual-universal/Moonlight-manual-universal.zip \
-            --target '${{ github.sha }}' --prerelease \
+            --target '${{ github.sha }}' --latest=false \
             --title 'Moonlight Enhanced English — Manual Updates Only' \
-            --notes-file docs/PRERELEASE_NOTES.md
+            --notes-file docs/RELEASE_REVIEW_NOTES.md
