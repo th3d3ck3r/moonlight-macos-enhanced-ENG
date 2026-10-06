@@ -1,3 +1,4 @@
 [submodule "moonlight-common/moonlight-common-c"]
 	path = moonlight-common/moonlight-common-c
 	url = https://github.com/th3d3ck3r/moonlight-common-c.git
+	branch = rebuild-moonlight-6.2-enhanced
