@@ -111,7 +111,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "native-6.2-manual-3" \
+          gh release create "native-6.2-manual-4" \
             release-artifacts/native-manual-x86_64/Moonlight-manual-x86_64.zip \
             release-artifacts/native-manual-universal/Moonlight-manual-universal.zip \
             --target '${{ github.sha }}' --latest=false \
