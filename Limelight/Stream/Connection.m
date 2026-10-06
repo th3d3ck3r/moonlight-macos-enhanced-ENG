@@ -2162,13 +2162,6 @@ void ClLogMessage(const char* format, ...)
     va_list va;
     va_start(va, format);
 
-    if (!isHighFrequencyDiagnostic) {
-        va_list stderrArgs;
-        va_copy(stderrArgs, va);
-        vfprintf(stderr, format, stderrArgs);
-        va_end(stderrArgs);
-    }
-
     va_list formatArgs;
     va_copy(formatArgs, va);
     char stackBuffer[2048];
@@ -2194,6 +2187,10 @@ void ClLogMessage(const char* format, ...)
     va_end(va);
 
     if (formattedLine.length > 0) {
+        formattedLine = LoggerRedactSensitiveMessage(formattedLine);
+        if (!isHighFrequencyDiagnostic) {
+            fprintf(stderr, "%s", formattedLine.UTF8String);
+        }
         NSString *trimmedLine = [formattedLine stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
         if (trimmedLine.length > 0) {
             LogLevel derivedLevel = isDropLog ? LOG_W : (isHighFrequencyDiagnostic ? LOG_D : LOG_I);

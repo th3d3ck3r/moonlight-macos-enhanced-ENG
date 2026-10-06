@@ -34,6 +34,8 @@ void LoggerSetCuratedModeEnabled(BOOL enabled);
 BOOL LoggerIsCuratedModeEnabled(void);
 void LoggerSetInputDiagnosticsEnabled(BOOL enabled);
 BOOL LoggerIsInputDiagnosticsEnabled(void);
+// Redact known pairing and stream credential fields before any output sink.
+NSString *LoggerRedactSensitiveMessage(NSString *message);
 void LoggerPersistMessage(LogLevel level, NSString *message);
 
 #endif

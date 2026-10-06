@@ -65,8 +65,47 @@ static NSString *LogPrefixForLevel(LogLevel level) {
     }
 }
 
+NSString *LoggerRedactSensitiveMessage(NSString *line) {
+    static NSArray<NSString *> *fieldNames;
+    static NSArray<NSRegularExpression *> *expressions;
+    static NSArray<NSString *> *replacements;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSString *fields = @"rikey|uniqueid|salt|clientchallenge|serverchallengeresp|clientpairingsecret|serverpairingsecret|challengeresponse";
+        fieldNames = [[fields stringByAppendingString:@"|PIN|saltedPIN"] componentsSeparatedByString:@"|"];
+        NSArray<NSString *> *patterns = @[
+            [NSString stringWithFormat:@"([?&](?:%@)=)[^&\\s<>\\\"']*", fields],
+            [NSString stringWithFormat:@"(<(%@)(?:\\s[^>]*)?>).*?(</\\2>)", fields],
+            [NSString stringWithFormat:@"(\\b(?:%@)\\s*=\\s*)(?:\\\"[^\\\"]*\\\"|[^;\\s&<>]+)", fields],
+            @"(\\b(?:PIN|saltedPIN):\\s*)(?:<[^>]*>|[^,\\s]+)"
+        ];
+        NSMutableArray<NSRegularExpression *> *compiled = [NSMutableArray array];
+        for (NSString *pattern in patterns) {
+            [compiled addObject:[NSRegularExpression regularExpressionWithPattern:pattern
+                options:NSRegularExpressionCaseInsensitive | NSRegularExpressionDotMatchesLineSeparators error:NULL]];
+        }
+        expressions = compiled;
+        replacements = @[@"$1[REDACTED]", @"$1[REDACTED]$3", @"$1[REDACTED]", @"$1[REDACTED]"];
+    });
+
+    // Keep ordinary frame/input diagnostics out of the regular-expression path.
+    BOOL containsSensitiveField = NO;
+    for (NSString *field in fieldNames) {
+        if ([line rangeOfString:field options:NSCaseInsensitiveSearch].location != NSNotFound) {
+            containsSensitiveField = YES;
+            break;
+        }
+    }
+    if (!containsSensitiveField) return line;
+    for (NSUInteger i = 0; i < expressions.count; i++) {
+        line = [expressions[i] stringByReplacingMatchesInString:line options:0
+            range:NSMakeRange(0, line.length) withTemplate:replacements[i]];
+    }
+    return line;
+}
+
 static NSString *FormatLogLine(LogLevel level, NSString *message) {
-    return [NSString stringWithFormat:@"%@ %@", LogPrefixForLevel(level), message ?: @""];
+    return LoggerRedactSensitiveMessage([NSString stringWithFormat:@"%@ %@", LogPrefixForLevel(level), message ?: @""]);
 }
 
 static BOOL IsHighFrequencyDiagnosticLine(NSString *line) {
@@ -798,7 +837,7 @@ void LogTagv(LogLevel level, NSString* tag, NSString* fmt, va_list args) {
     // Build a formatted line for in-app log overlays without consuming the original va_list.
     va_list argsCopy;
     va_copy(argsCopy, args);
-    NSString *formattedLine = [[NSString alloc] initWithFormat:prefixedString arguments:argsCopy];
+    NSString *formattedLine = LoggerRedactSensitiveMessage([[NSString alloc] initWithFormat:prefixedString arguments:argsCopy]);
     va_end(argsCopy);
 
     if (!ShouldAllowFormattedLine(level, formattedLine)) {
@@ -856,6 +895,6 @@ void LogTagv(LogLevel level, NSString* tag, NSString* fmt, va_list args) {
 
     [[LogBuffer shared] appendLine:formattedLine level:level];
     if (!highFrequencyDiagnostic) {
-        NSLogv(prefixedString, args);
+        NSLog(@"%@", formattedLine);
     }
 }
