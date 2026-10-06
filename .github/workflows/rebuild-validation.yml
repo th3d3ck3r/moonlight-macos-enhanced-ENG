@@ -69,3 +69,26 @@ jobs:
             build.log
             Moonlight-${{ matrix.variant }}.zip
           if-no-files-found: warn
+  prerelease:
+    name: Publish tested rebuild prerelease
+    needs: build
+    if: github.event_name == 'push' && contains(github.event.head_commit.message, '[prerelease]')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: native-rebuild-*
+          path: release-artifacts
+      - name: Publish Intel and Universal downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "native-6.2-rebuild-${{ github.run_number }}" \
+            release-artifacts/native-rebuild-x86_64/Moonlight-x86_64.zip \
+            release-artifacts/native-rebuild-universal/Moonlight-universal.zip \
+            --target '${{ github.sha }}' --prerelease \
+            --title 'Moonlight Enhanced English — Intel/Tahoe 6.2 Rebuild' \
+            --notes-file docs/PRERELEASE_NOTES.md
