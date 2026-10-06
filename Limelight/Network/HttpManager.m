@@ -1080,7 +1080,8 @@ static const NSString* HTTPS_PORT = @"47984";
             CFArrayRef certs = SecTrustCopyCertificateChain(challenge.protectionSpace.serverTrust);
             if (certs) {
                 if (CFArrayGetCount(certs) > 0) {
-                    actualCert = (SecCertificateRef)CFArrayGetValueAtIndex(certs, 0);
+                    // Keep our own reference after releasing the copied certificate chain.
+                    actualCert = (SecCertificateRef)CFRetain(CFArrayGetValueAtIndex(certs, 0));
                 }
                 CFRelease(certs);
             }
@@ -1088,6 +1089,7 @@ static const NSString* HTTPS_PORT = @"47984";
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
             actualCert = SecTrustGetCertificateAtIndex(challenge.protectionSpace.serverTrust, 0);
+            if (actualCert != NULL) CFRetain(actualCert);
 #pragma clang diagnostic pop
         }
 
@@ -1098,6 +1100,7 @@ static const NSString* HTTPS_PORT = @"47984";
         }
         
         CFDataRef actualCertData = SecCertificateCopyData(actualCert);
+        CFRelease(actualCert);
         if (actualCertData == nil) {
             Log(LOG_E, @"Server certificate data parsing error");
             completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, NULL);
