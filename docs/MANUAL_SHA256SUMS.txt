@@ -1,0 +1,2 @@
+3a5484912f2ac38ee61faf3c2b48aea5ab52177826c17d9e6dcc228b2922883c  Moonlight-manual-x86_64.zip
+b63ba1bf587e84d8f8a11f7d05ecec189ef8b8c21d3312a65cf39f8466f448c9  Moonlight-manual-universal.zip

@@ -12,7 +12,7 @@ This rebuild retains the native macOS Enhanced application. It does not turn it 
 - Maintained common-c: `th3d3ck3r/moonlight-common-c`, `rebuild-moonlight-6.2-enhanced`.
 - Common-c merge: `593193e2b7ccce75947d922c6e64ca9e3eed0489`; tests/main gitlink: `5b10cda18d896eb309ac03b453004f2856ae1c77`.
 
-No earlier discarded customization was restored.
+No earlier discarded customization was restored. Master was fast-forwarded to this rebuild only after the full Intel-only and Universal application builds and automated checks passed. Release tags remain pinned to their validated source commits.
 
 ## Native rebuild commits
 
@@ -146,3 +146,12 @@ Recognition-only Chinese literals remain internally for detecting OS error messa
 8. Clipboard text and image in both directions with compatible Enhanced/Foundation Sunshine; reconnect and repeat.
 9. Change renderer, decoder, codec, HDR, host profiles and input/audio settings; relaunch and verify persistence. Check menu, alerts, overlays and logs for clear English.
 10. Stress startup/shutdown/reconnect and window/fullscreen transitions; record errors and timing logs before changing defaults.
+
+## Separate manual-update-only release
+
+- Branch: `rebuild-moonlight-6.2-english-manual`; validated release source `bbe2973bb5ac3225a3a0023386dc4cd347c3414c`.
+- [Run 37530026373](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37530026373): complete x86_64 and Universal Release builds passed; main/helper slices, common-c tests, native XML regression tests, English/LAN bundle audits and manual-update source/bundle audits all passed. Same remaining upstream/signing/AppIntents warnings as the primary release.
+- [Separate downloads](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-1): `Moonlight-manual-x86_64.zip` and `Moonlight-manual-universal.zip`.
+- The baseline already contained no app updater. This variant labels manual updates in About, points About/welcome links to the maintained fork, and rejects known updater/feed components during packaging. Debug-log polling remains enabled. This does not remove or replace the maintained common-c dependency.
+- Native application differences from the primary release are limited to About/welcome links and the manual-update notice. Bundle identity/settings are retained; this is an alternative Moonlight.app package, not a side-by-side app. Quit and replace the installed app when switching variants.
+- The first manual packaging audit missed Unicode NSString text; its byte scan was corrected to recognize UTF-16 as well as UTF-8. Both final package audits passed. Live streaming/permission/helper tests remain unperformed.

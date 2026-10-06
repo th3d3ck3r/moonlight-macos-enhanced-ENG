@@ -35,6 +35,8 @@ Built with the protocol core used by **Moonlight PC v6.2.0 — the latest offici
 
 > These packages are not Developer ID signed or notarized. macOS may require **System Settings → Privacy & Security → Open Anyway**. Privileged AWDL helper authorization has not been validated with a Developer ID signature.
 
+**Separate manual-update-only build:** [Intel and Universal downloads](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-1). It labels manual updates in About, uses this fork’s repository links, and audits packages for updater/feed components. The clean baseline already had no automatic app updater. Choose one Moonlight.app package when installing.
+
 ## ✨ Features
 
 | Area | What this rebuild offers |

@@ -6,7 +6,7 @@ This is a **regular GitHub release for Intel macOS Tahoe**, published after full
 
 Changes include RTSP/security and FEC fixes, extended keyboard keys/keypad Enter, Sunshine client identity handling, explicit hardware VideoToolbox preference with a software fallback setting, optional HDR/SDR safety, device-based MetalFX availability, English UI/diagnostics and preserved Local Network support. Enhanced microphone, clipboard, HDR negotiation and multichannel audio extensions remain in the maintained core.
 
-Native rendering is retained. No Qt, MoltenVK or libplacebo conversion; no merge into master.
+Native rendering is retained. No Qt, MoltenVK or libplacebo conversion; the rebuild was promoted to master after both complete builds and their validation passed.
 
 The app is **not Developer ID signed or notarized**. Gatekeeper may require an explicit local allow action. The privileged AWDL helper has an ad-hoc signature; its installation/authorization is not validated with a Developer ID signature in this release.
 
