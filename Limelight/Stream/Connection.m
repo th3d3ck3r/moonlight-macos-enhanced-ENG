@@ -2513,7 +2513,7 @@ void ClClipboardItemReceived(const LI_CLIPBOARD_ITEM *item)
     // As a result, we will only use HEVC on iOS 11.3 or later.
 #if defined(VIDEO_FORMAT_H264_HIGH8_444)
     // Newer moonlight-common-c uses supportedVideoFormats for codec negotiation.
-    int codecPreference = config.videoCodecPreference;
+    int codecPreference = config.enableHdr ? MAX(1, config.videoCodecPreference) : config.videoCodecPreference;
     BOOL hevcDecodeSupported = NO;
     if (@available(iOS 11.3, tvOS 11.3, macOS 10.14, *)) {
         hevcDecodeSupported = VTIsHardwareDecodeSupported(kCMVideoCodecType_HEVC);
@@ -2521,8 +2521,12 @@ void ClClipboardItemReceived(const LI_CLIPBOARD_ITEM *item)
     BOOL hevcSupported = codecPreference >= 1 && hevcDecodeSupported;
     BOOL av1Supported = codecPreference >= 2 && VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1);
 
-    // If HDR is requested, at least one 10-bit codec path must be available.
-    assert(!config.enableHdr || hevcSupported || av1Supported);
+    // Older Intel Macs may lack both HDR codec paths. Keep streaming in SDR
+    // rather than asserting or advertising HDR for an H.264-only session.
+    if (config.enableHdr && !hevcSupported && !av1Supported) {
+        Log(LOG_W, @"HDR decoding is unavailable on this Mac; falling back to SDR H.264");
+        config.enableHdr = NO;
+    }
 
     BOOL enableYuv444 = NO;
     @try {

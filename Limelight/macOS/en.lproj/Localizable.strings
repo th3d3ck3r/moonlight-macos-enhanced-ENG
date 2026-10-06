@@ -706,7 +706,7 @@
 "HEVC Decode" = "HEVC Decode";
 "HEVC Decode detail" = "Shows whether this Mac has confirmed local hardware decode support for HEVC.";
 "MetalFX" = "MetalFX";
-"MetalFX capability detail" = "Current MetalFX availability for the active macOS version.";
+"MetalFX capability detail" = "MetalFX availability for this Mac’s GPU and macOS version.";
 "VT Low-Latency Super Resolution" = "VT Low-Latency Super Resolution";
 "VT Low-Latency Super Resolution detail" = "Low-latency VideoToolbox super-resolution processor availability on this Mac.";
 "VT Low-Latency Frame Interpolation" = "VT Low-Latency Frame Interpolation";

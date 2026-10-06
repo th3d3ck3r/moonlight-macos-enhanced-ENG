@@ -2324,7 +2324,10 @@ static CGDirectDisplayID getDisplayID(NSScreen* screen)
     _frameQueueTargetOverride = streamConfig ? streamConfig.frameQueueTarget : -1;
     _timingResponsivenessBias = streamConfig ? streamConfig.timingResponsivenessBias : (_timingPrioritizeResponsiveness ? 1 : 0);
     _allowDrawableTimeoutMode = streamConfig ? (MLAllowDrawableTimeoutMode)streamConfig.allowDrawableTimeoutMode : MLAllowDrawableTimeoutModeAuto;
-    _enableHdr = streamConfig ? streamConfig.enableHdr : NO;
+    _enableHdr = streamConfig && streamConfig.enableHdr && (videoFormat & VIDEO_FORMAT_MASK_10BIT);
+    if (streamConfig.enableHdr && !_enableHdr) {
+        Log(LOG_W, @"Host negotiated an SDR video format; using SDR presentation");
+    }
     _hdrTransferFunctionPreference = streamConfig ? streamConfig.hdrTransferFunction : 0;
     _hdrMetadataSourceMode = streamConfig ? (MLHDRMetadataSourceMode)streamConfig.hdrMetadataSource : MLHDRMetadataSourceModeHybrid;
     _hdrClientDisplayProfileMode = streamConfig ? (MLHDRClientDisplayProfileMode)streamConfig.hdrClientDisplayProfile : MLHDRClientDisplayProfileModeAuto;

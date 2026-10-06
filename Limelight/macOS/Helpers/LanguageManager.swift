@@ -91,7 +91,7 @@ public class LanguageManager: NSObject, ObservableObject {
     "Scale vs Upscaling hint": "Resolution Scale saves bandwidth. Upscaling improves reconstructed detail on the client.",
     "AI enhancement recommended hint": "Most useful when streaming below native resolution or at lower bitrate.",
     "Resolution Scale + Upscaling hint": "Tip: Lower host scale plus client upscaling can keep the image clearer at the same bandwidth.",
-    "MetalFX requires macOS 13 or later.": "Requires macOS 13+.",
+    "MetalFX requires macOS 13 or later.": "Requires macOS 13 or later and a compatible GPU.",
 
     "MetalFX Spatial (Quality)": "MetalFX (Quality)",
     "MetalFX Spatial (Performance)": "MetalFX (Performance)",
