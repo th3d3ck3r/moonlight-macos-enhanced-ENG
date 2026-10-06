@@ -19,6 +19,12 @@ int main(void) {
         assert([[response getStringTag:@"state"] isEqualToString:@"SUNSHINE_SERVER_FREE"]);
         assert([[response getStringTag:@"empty"] isEqualToString:@""]);
 
+        NSInteger pairedStatus = -1;
+        [response populateWithData:xml(@"<root status_code='200'><paired>1oops</paired></root>")];
+        assert(![response getIntTag:@"paired" value:&pairedStatus] && pairedStatus == -1);
+        [response populateWithData:xml(@"<root status_code='200'><paired> 1 </paired></root>")];
+        assert([response getIntTag:@"paired" value:&pairedStatus] && pairedStatus == 1);
+
         NSArray<NSString *> *invalid = @[
             @"", @"not xml", @"<root>", @"<root status_code='not-a-number'/>",
             @"<root status_code='200oops'><state>SUNSHINE_SERVER_FREE</state></root>",
