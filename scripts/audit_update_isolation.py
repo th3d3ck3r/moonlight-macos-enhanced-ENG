@@ -39,7 +39,9 @@ def main():
         binary = (contents / 'MacOS/Moonlight').read_bytes()
         if b'Sparkle.framework' in binary or b'SUFeedURL' in binary:
             errors.append('Packaged executable contains known updater dependency/feed')
-        if b'Manual updates only.' not in binary:
+        # Clang uses UTF-16 NSString constants when a literal contains Unicode.
+        notice = 'Manual updates only.'
+        if not any(notice.encode(encoding) in binary for encoding in ('utf-8', 'utf-16-le', 'utf-16-be')):
             errors.append('Packaged executable lacks manual-update notice')
     if errors:
         raise SystemExit('\n'.join(errors))
