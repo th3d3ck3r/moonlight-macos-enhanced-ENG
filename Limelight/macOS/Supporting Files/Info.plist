@@ -3,7 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
-	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<string>en</string>
+	<key>CFBundleLocalizations</key>
+	<array>
+		<string>en</string>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
@@ -35,6 +39,12 @@
 	<string>Used to capture microphone audio for streaming to the host.</string>
 	<key>NSInputMonitoringUsageDescription</key>
 	<string>Used to capture high-rate mouse input for low-latency streaming controls.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Moonlight uses your local network to discover and connect to game streaming hosts.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_nvstream._tcp</string>
+	</array>
 	<key>NSMainStoryboardFile</key>
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
