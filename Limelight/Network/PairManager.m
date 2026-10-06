@@ -112,7 +112,7 @@
 #endif
     
     NSData* salt = [self saltPIN:PIN];
-    Log(LOG_I, @"PIN: %@, saltedPIN: %@", PIN, salt);
+    Log(LOG_I, @"Pairing credentials prepared");
     
     HttpResponse* pairResp = [[HttpResponse alloc] init];
     [_httpManager executeRequestSynchronously:[HttpRequest requestForResponse:pairResp withUrlRequest:[_httpManager newPairRequest:salt clientCert:_clientCert]]];
