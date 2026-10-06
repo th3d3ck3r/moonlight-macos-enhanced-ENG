@@ -9,6 +9,9 @@
 import AppKit
 import CoreGraphics
 import Metal
+#if canImport(MetalFX)
+import MetalFX
+#endif
 import SwiftUI
 import VideoToolbox
 
@@ -437,9 +440,11 @@ extension SettingsModel {
   static var displayModes: [String] = ["Windowed", "Fullscreen", "Borderless Windowed"]
 
   static var isMetalFXSupported: Bool {
-    if #available(macOS 13.0, *) {
-      return true
+    #if canImport(MetalFX)
+    if #available(macOS 13.0, *), let device = MTLCreateSystemDefaultDevice() {
+      return MTLFXSpatialScalerDescriptor.supportsDevice(device)
     }
+    #endif
     return false
   }
 

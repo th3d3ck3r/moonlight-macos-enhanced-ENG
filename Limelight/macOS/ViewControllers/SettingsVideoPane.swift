@@ -14,6 +14,7 @@ import SwiftUI
 
 struct VideoView: View {
   @EnvironmentObject private var settingsModel: SettingsModel
+  @AppStorage("videoDecoderPreferSoftware") private var videoDecoderPreferSoftware = false
   @ObservedObject var languageManager = LanguageManager.shared
   @AppStorage("settings.video.customTimingRiskAcknowledged") private var customTimingRiskAcknowledged = false
   @AppStorage("settings.video.metalTuningExpanded") private var metalTuningExpanded = false
@@ -131,6 +132,17 @@ struct VideoView: View {
               .labelsHidden()
               .frame(maxWidth: .infinity, alignment: .trailing)
             })
+
+          ToggleCell(
+            title: "Use Software Decoding",
+            boolBinding: $videoDecoderPreferSoftware
+          )
+          .disabled(normalizedRendererMode == "Compatibility Renderer")
+
+          Text("Troubleshooting option for Native and Metal renderers. Applies to all hosts on the next connection. Software decoding may use significantly more CPU; Compatibility mode uses the system decoder.")
+            .font(.footnote)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
 
           Text(languageManager.localize(videoCodecDetailKey))
             .font(.footnote)

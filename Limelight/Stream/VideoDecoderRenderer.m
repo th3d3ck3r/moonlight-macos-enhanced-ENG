@@ -305,12 +305,16 @@ static float MLComputeRenderedOnePercentLowFps(const uint16_t *samples, NSUInteg
     return 1000.0f / (float)averageWorstFrameTimeMs;
 }
 
+static id<MTLDevice> MLSharedMetalDevice(void);
+
 static BOOL MLMetalFXIsSupported(void)
 {
 #if ML_HAS_METALFX
     if (@available(macOS 13.0, *)) {
         // If MetalFX is weak-linked on older systems, class lookup will be nil.
-        return NSClassFromString(@"MTLFXSpatialScalerDescriptor") != nil;
+        id<MTLDevice> device = MLSharedMetalDevice();
+        return device != nil && NSClassFromString(@"MTLFXSpatialScalerDescriptor") != nil
+            && [MTLFXSpatialScalerDescriptor supportsDevice:device];
     }
 #endif
     return NO;
@@ -2945,15 +2949,34 @@ void decompressionOutputCallback(void *decompressionOutputRefCon, void *sourceFr
         }
     }
 
+    // Request hardware VideoToolbox decoding without requiring it. Older Intel
+    // GPUs can still fall back to software when a format is not supported.
+    BOOL preferSoftware = [[NSUserDefaults standardUserDefaults] boolForKey:@"videoDecoderPreferSoftware"];
+    NSDictionary *decoderSpecification = @{
+        (id)kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder: @(!preferSoftware),
+    };
+
     OSStatus status = VTDecompressionSessionCreate(kCFAllocatorDefault,
                                                    formatDesc,
-                                                   NULL,
+                                                   (__bridge CFDictionaryRef)decoderSpecification,
                                                    (__bridge CFDictionaryRef)destinationImageBufferAttributes,
                                                    &callbackRecord,
                                                    &_decompressionSession);
     if (status != noErr) {
         Log(LOG_E, @"VTDecompressionSessionCreate failed: %d", (int)status);
         return NO;
+    }
+
+    CFTypeRef hardwareDecoder = NULL;
+    OSStatus hardwareStatus = VTSessionCopyProperty(_decompressionSession,
+        kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder,
+        kCFAllocatorDefault, &hardwareDecoder);
+    if (hardwareStatus == noErr && hardwareDecoder != NULL) {
+        Log(LOG_I, @"[video] VideoToolbox hardware decoding: %@",
+            CFEqual(hardwareDecoder, kCFBooleanTrue) ? @"enabled" : @"software fallback");
+        CFRelease(hardwareDecoder);
+    } else {
+        Log(LOG_W, @"[video] Unable to query VideoToolbox hardware decoder: %d", (int)hardwareStatus);
     }
 
     status = VTSessionSetProperty(_decompressionSession,
