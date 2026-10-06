@@ -37,6 +37,14 @@ jobs:
           cmake -S moonlight-common/moonlight-common-c -B common-test -DCMAKE_BUILD_TYPE=Debug
           cmake --build common-test --parallel 3
           ctest --test-dir common-test --output-on-failure
+      - name: Test native host XML security and compatibility
+        run: |
+          xcrun clang -fobjc-arc -framework Foundation -lxml2 \
+            -I tests/host-response -I Limelight/Network -I "$(xcrun --show-sdk-path)/usr/include/libxml2" \
+            -include tests/host-response/Support.h \
+            Limelight/Network/HttpResponse.m Limelight/Network/AppListResponse.m \
+            tests/host-response/HostResponseTests.m -o /tmp/host-response-tests
+          /tmp/host-response-tests
       - name: Download native dependencies
         run: |
           curl --fail --location --retry 3 -o xcframeworks.zip https://github.com/coofdy/moonlight-mobile-deps/releases/download/latest/moonlight-apple-xcframeworks.zip
