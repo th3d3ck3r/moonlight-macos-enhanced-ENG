@@ -49,7 +49,7 @@ jobs:
           cat SHA256SUMS.txt >> release-notes.md
           printf '```\n' >> release-notes.md
           gh release create native-6.2-manual-21 "$intel" "$universal" SHA256SUMS.txt \
-            --target 4e5b3ec78c6b6227c50bdc9ac7da198d782cf7bc --latest \
+            --target '${{ github.sha }}' --latest \
             --title 'Moonlight Enhanced English — Manual Build 21' \
             --notes-file release-notes.md
           test "$(gh api repos/$GH_REPO/releases/latest --jq '.tag_name')" = native-6.2-manual-21
@@ -72,20 +72,22 @@ jobs:
             '6691a9d84fa59325ef8605a999ee0a8e10b96a34'
             'f03fb401876108870b09f5dfd6dd45c74f00dbb3'
           )
-          # Archive every tip before deleting anything. A changed branch stops cleanup.
+          # Every old tip must be reachable from the preserved consolidation history.
           for i in "${!branches[@]}"; do
             branch="${branches[$i]}"
             sha="${expected[$i]}"
             actual=$(gh api "repos/$GH_REPO/git/ref/heads/$branch" --jq '.object.sha')
             echo "Checking $branch: $actual (expected $sha)"
             test "$actual" = "$sha"
-            tag="archive/2026-10-06/$branch"
-            if archived=$(gh api "repos/$GH_REPO/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null); then
-              test "$archived" = "$sha"
-            else
-              gh api --method POST "repos/$GH_REPO/git/refs" -f ref="refs/tags/$tag" -f sha="$sha"
-            fi
+            git merge-base --is-ancestor "$sha" HEAD
           done
+          # This tag retains the complete consolidated history, including all old tips.
+          tag=archive/2026-10-06/consolidated-history
+          if archived=$(gh api "repos/$GH_REPO/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null); then
+            git merge-base --is-ancestor "$archived" HEAD
+          else
+            gh api --method POST "repos/$GH_REPO/git/refs" -f ref="refs/tags/$tag" -f sha='${{ github.sha }}'
+          fi
           for i in "${!branches[@]}"; do
             branch="${branches[$i]}"
             actual=$(gh api "repos/$GH_REPO/git/ref/heads/$branch" --jq '.object.sha')
