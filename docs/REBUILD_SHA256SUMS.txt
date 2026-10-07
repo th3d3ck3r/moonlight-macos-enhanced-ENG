@@ -1,0 +1,2 @@
+b9d2520dcb3b8b785a6bdd8cd572859011d63be0f782971ad9ded9b6cb1faf77  Moonlight-x86_64.zip
+99fddc9d5701a795f8a6c96897cc8229bfcf8e1e4c87490dfabff2d1438affdd  Moonlight-universal.zip

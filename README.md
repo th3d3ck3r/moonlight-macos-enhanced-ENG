@@ -32,10 +32,10 @@ Built with the protocol core used by **Moonlight PC v6.2.0 — the latest offici
 
 | Your Mac | Download |
 |---|---|
-| **Intel — recommended for Intel Macs** | [Moonlight-manual-x86_64.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-manual-1/Moonlight-manual-x86_64.zip) |
-| **Intel + Apple Silicon** | [Moonlight-manual-universal.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-manual-1/Moonlight-manual-universal.zip) |
+| **Intel — recommended for Intel Macs** | [Moonlight-manual-x86_64.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-manual-4/Moonlight-manual-x86_64.zip) |
+| **Intel + Apple Silicon** | [Moonlight-manual-universal.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-manual-4/Moonlight-manual-universal.zip) |
 
-[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-1) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/MANUAL_SHA256SUMS.txt)
+[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-4) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/MANUAL_SHA256SUMS.txt)
 
 > These packages are not Developer ID signed or notarized. macOS may require **System Settings → Privacy & Security → Open Anyway**. Privileged AWDL helper authorization has not been validated with a Developer ID signature.
 
@@ -103,11 +103,11 @@ A native Tahoe UI refresh is planned: polished Settings, clearer sidebars/toolba
 
 ## 🧪 Validation
 
-The detailed [integration report](docs/MOONLIGHT_6_2_REBUILD.md) records exact upstream commits, conflict resolutions, selected native ports, exclusions, build results, warnings and the [Intel Tahoe test checklist](docs/MOONLIGHT_6_2_REBUILD.md#intel-tahoe-test-checklist).
+The [latest code-review report](docs/CODE_REVIEW_2026_10_06.md) records the follow-up fixes and test limits. The detailed [integration report](docs/MOONLIGHT_6_2_REBUILD.md) records exact upstream commits, conflict resolutions, selected native ports, exclusions, build results, warnings and the [Intel Tahoe test checklist](docs/MOONLIGHT_6_2_REBUILD.md#intel-tahoe-test-checklist).
 
-**Intel-only and Universal full builds passed** in [the manual variant validation run](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37530026373), including the source/bundle update-policy checks. The Intel package was cross-compiled with an explicit x86_64 target on the Tahoe Apple Silicon runner; physical Intel streaming remains untested.
+**Intel-only and Universal full builds passed** in [the manual variant validation run](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37545859459), including the source/bundle update-policy checks. The Intel package was cross-compiled with an explicit x86_64 target on the Tahoe Apple Silicon runner; physical Intel streaming remains untested.
 
-Automated checks cover full Intel/Universal application builds, executable/helper architecture checks, recursive submodule checkout, English/LAN bundle declarations, common-c FEC/crypto/input boundaries, and the production host XML parsers.
+Automated checks cover full Intel/Universal application builds, executable/helper architecture checks, recursive submodule checkout, English/LAN bundle declarations, common-c FEC/crypto/input boundaries, production host XML and logger redaction tests, RTSP malformed-input tests, and production clipboard receive tests.
 
 **Physical Mac tests remain:** permission prompts, discovery/pairing, real app lists, stream startup/shutdown/reconnect, hardware decoding, pacing/color/HDR, input/controller, audio, microphone, clipboard and settings persistence. Passing a build does not certify those behaviors.
 

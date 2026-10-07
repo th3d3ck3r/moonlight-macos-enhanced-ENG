@@ -10,7 +10,7 @@ This rebuild retains the native macOS Enhanced application. It does not turn it 
 - Official Qt review: `v6.1.0..v6.2.0`, endpoint `de2467e433821664cdd2224aad8c89a625be1ad9`.
 - Official common-c endpoint: `f900dd4767759c7b9d0e93bcea666b55c69ea62f`.
 - Maintained common-c: `th3d3ck3r/moonlight-common-c`, `rebuild-moonlight-6.2-enhanced`.
-- Common-c merge: `593193e2b7ccce75947d922c6e64ca9e3eed0489`; tests/main gitlink: `5b10cda18d896eb309ac03b453004f2856ae1c77`.
+- Common-c merge: `593193e2b7ccce75947d922c6e64ca9e3eed0489`; original tests gitlink: `5b10cda18d896eb309ac03b453004f2856ae1c77`; reviewed maintained gitlink: `165374368805b80260467023dfa9948113ef1896`.
 
 No earlier discarded customization was restored. Master was fast-forwarded to this rebuild only after the full Intel-only and Universal application builds and automated checks passed. Release tags remain pinned to their validated source commits.
 
@@ -127,7 +127,7 @@ Recognition-only Chinese literals remain internally for detecting OS error messa
 - Tahoe Intel and Apple Silicon runners: native host XML regression tests passed using the actual production HttpResponse/AppListResponse sources with only model/database/logging boundaries stubbed. Cases cover malformed input, DTD/internal/external entities, parser reuse/status reset, empty app titles and invalid/missing IDs.
 - Fresh recursive clone from the public maintained repositories passed; common-c, ENet and nanors checked out their expected gitlinks.
 - Source English/Local Network audit passed. The Universal build and its main/helper x86_64 + arm64 architecture checks passed in [run 37525760627](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37525760627). Final [run 37528656903](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37528656903) passed both complete Release application builds, common-c/production XML tests, English/LAN source and bundle audits, and main/helper architecture checks. Release source commit: `5e3bf0575505f8257b27cdf0fd7faafd5a8e4d77`; tag: [`native-6.2-rebuild-5`](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-5).
-- The native Intel Tahoe runner passed common-c and XML tests, but its full application build stopped progressing at Interface Builder compilation and was canceled after more than 20 minutes. The release workflow now uses an Apple Silicon Tahoe runner with an explicit x86_64 target for the Intel-only package. This is cross-compilation, not a successful full build on an Intel runner or physical Intel streaming test.
+- The first native Intel Tahoe attempt stalled at Interface Builder and was canceled. Later [run 37530567839](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37530567839) successfully built and packaged the full application/helper on `macos-26-intel`, plus arm64 and Universal jobs. The release validation workflow uses explicit x86_64 and Universal targets on an Apple Silicon Tahoe runner. Physical Intel streaming remains untested.
 - **Actually built:** Intel-only `ARCHS=x86_64` and Universal `ARCHS="x86_64 arm64"`, both with `ONLY_ACTIVE_ARCH=NO`, Xcode 26.6 (17F113), macOS 26.6.2 runner and SDK 26.5. Both main executable and AWDL helper have the expected slices. Deployment target remains macOS 12.
 - Remaining warnings: upstream ENet mixes command/flag enum types at `host.c:247/467`; the platform-guarded `win32.o` has no symbols; no signing identity is available for the AWDL helper; AppIntents metadata extraction is skipped because no AppIntents framework is used. Native clipboard ownership and bitmap enum warnings were fixed.
 - Released applications are not Developer ID signed or notarized. The AWDL helper is ad-hoc signed by its build script; installation/authorization remains untested.
@@ -155,3 +155,7 @@ Recognition-only Chinese literals remain internally for detecting OS error messa
 - The baseline already contained no app updater. This variant labels manual updates in About, points About/welcome links to the maintained fork, and rejects known updater/feed components during packaging. Debug-log polling remains enabled. This does not remove or replace the maintained common-c dependency.
 - Native application differences from the primary release are limited to About/welcome links and the manual-update notice. Bundle identity/settings are retained; this is an alternative Moonlight.app package, not a side-by-side app. Quit and replace the installed app when switching variants.
 - The first manual packaging audit missed Unicode NSString text; its byte scan was corrected to recognize UTF-16 as well as UTF-8. Both final package audits passed. Live streaming/permission/helper tests remain unperformed.
+
+## Subsequent complete rebuild review
+
+See [the October 6 code review](CODE_REVIEW_2026_10_06.md) for the corrected RTSP bounds, strict host/pairing integer parsing, held-key cleanup, diagnostic credential redaction, clipboard completion validation, active test assertions and latest release build evidence. The earlier source/release references above are historical; use the reviewed release linked in README.md.

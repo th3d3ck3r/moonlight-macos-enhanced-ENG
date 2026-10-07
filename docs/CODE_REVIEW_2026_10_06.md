@@ -33,8 +33,25 @@ Linux x86_64 builds of the complete customized common-c library passed in Debug 
 
 The previous published master completed native Intel Tahoe, arm64 and Universal jobs in [run 37530567839](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37530567839). Intel job `112498586027` ran on `macos-26-intel` and passed the full app/helper build, architecture checks and packaging; arm64 job `112498586461` and Universal job `112507526397` passed too. This supersedes the earlier stalled Intel-runner attempt described in the original report.
 
-The corrected source must pass fresh full x86_64 and Universal Release application builds for both editions before its release is published. CI also runs common-c and actual native XML/logger tests under ASan/UBSan, English/LAN bundle checks, executable/helper architecture checks, and the manual-update guard for that edition. Exact corrected build/release revisions and results will be recorded after completion.
+The reviewed standard source `686764a7eb0fe66cbc05c80467ca2f03e99ebe55` passed both full x86_64 and Universal Release builds in [run 37545875198](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37545875198). Intel-only job `112549633181` and Universal job `112549633480` passed common-c ASan/UBSan CTests with active assertions, actual native XML/logger sanitizer tests, recursive checkout, English/LAN source and bundle audits, and main/helper architecture checks. Xcode 26.6 (17F113). The Intel release package is cross-compiled on an Apple Silicon Tahoe runner; the earlier successful native Intel build above used the previous source revision. Neither proves physical streaming performance.
 
-Known previous build warnings: ENet command/flag enum mixing, an empty platform-guarded win32.o, unavailable helper signing identity and skipped unused AppIntents metadata. Packages are not Developer ID signed or notarized; the helper is ad-hoc signed and authorization is untested.
+Regular release: [native-6.2-rebuild-17](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-17). Both uploaded ZIPs and GitHub SHA-256 digests were verified; see [checksums](REBUILD_SHA256SUMS.txt). The manual-update source `db93cccf209b17af1ac4a4037a2d49dfab97455e` passed both full builds in [run 37545859459](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37545859459), with x86_64 job `112549846668` and Universal job `112549846418`. All the same tests and architecture checks passed, plus the manual-update source/bundle guard. Regular release: [native-6.2-manual-4](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-4); uploaded ZIPs/digests verified in [manual checksums](MANUAL_SHA256SUMS.txt). Both releases are regular releases, not drafts/prereleases, and their tags stay pinned to these validated source revisions.
+
+Remaining build warnings: ENet command/flag enum mixing, an empty platform-guarded win32.o, unavailable helper signing identity and skipped unused AppIntents metadata. Packages are not Developer ID signed or notarized; the helper is ad-hoc signed and authorization is untested.
 
 Live discovery, first-launch Local Network prompt/privacy listing, pairing, app lists, stream startup/shutdown/reconnect, keyboard/mouse/controllers, H.264/HEVC hardware decoding, HDR/SDR color and pacing, audio/microphone, clipboard, renderer selection/settings persistence and helper authorization must still be tested on the user's Intel Tahoe Mac. The source and bundle checks verify declarations, not OS permission behavior. Liquid Glass is planned, not implemented.
+
+## Exact follow-up revisions
+
+| Main commit | Change |
+| --- | --- |
+| `2f30c80381bde454b3c3e31277854a1cd68f551e` | Complete bounded status/app-ID parsing and XML root validation |
+| `4945458bdd5545678817b083175ec8c4736da70c` | Held-key release on capture exit |
+| `e0b34389c13c1354976a4e689e8586ff4834e4f1` | RTSP bounds-fix common-c gitlink |
+| `3ef31ca35f428bfa4e538ee3293c13172494e2c2` | Known protocol credential redaction before diagnostic sinks |
+| `c1c06f9d00bdc11be516c29202970b0f6a40f407` | XIB English audit, punctuation and maintained branch metadata |
+| `507be79b986c9af3f5d04959f6ed830bfde1a009` | Strict pairing-status integer parsing |
+| `8199e664c8dfba326661fabf5ba2c9dcac40e680` | Clipboard completeness and active protocol assertions |
+| `686764a7eb0fe66cbc05c80467ca2f03e99ebe55` | Explicit paired-server certificate ownership |
+
+Common-c follow-ups: RTSP bounds/test commit `4a2c0d3b09ace7c3aba81837bc2e8a3197916177`; clipboard receiver/tests/assertion fix `165374368805b80260467023dfa9948113ef1896`. Upstream endpoint remains an ancestor; these are additional native-fork corrections.
