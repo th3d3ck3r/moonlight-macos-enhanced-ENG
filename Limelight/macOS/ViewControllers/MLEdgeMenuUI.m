@@ -26,8 +26,21 @@
 
         _iconView = [[NSImageView alloc] initWithFrame:NSZeroRect];
         _iconView.imageScaling = NSImageScaleProportionallyUpOrDown;
-        _iconView.autoresizingMask = NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin;
+        _iconView.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_iconView];
+
+        // Keep geometry in Auto Layout. Resizing NSImageView from layout()
+        // invalidates window constraints during Tahoe's display cycle.
+        NSLayoutConstraint *preferredWidth = [_iconView.widthAnchor constraintEqualToAnchor:self.widthAnchor multiplier:0.32];
+        preferredWidth.priority = 999;
+        [NSLayoutConstraint activateConstraints:@[
+            [_iconView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+            [_iconView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+            [_iconView.heightAnchor constraintEqualToAnchor:_iconView.widthAnchor],
+            [_iconView.widthAnchor constraintLessThanOrEqualToAnchor:self.widthAnchor multiplier:0.32],
+            [_iconView.heightAnchor constraintLessThanOrEqualToAnchor:self.heightAnchor multiplier:0.32],
+            preferredWidth
+        ]];
 
         [self updateVisualStyle];
     }
@@ -59,23 +72,12 @@
 
 - (void)setCompactAppearance:(BOOL)compactAppearance {
     _compactAppearance = compactAppearance;
-    [self setNeedsLayout:YES];
     [self updateVisualStyle];
 }
 
 - (void)setDockEdge:(MLFreeMouseExitEdge)dockEdge {
     _dockEdge = dockEdge;
-    [self setNeedsLayout:YES];
     [self updateVisualStyle];
-}
-
-- (void)layout {
-    [super layout];
-
-    CGFloat iconSize = MIN(self.bounds.size.width, self.bounds.size.height) * 0.32;
-    _iconView.frame = NSMakeRect((NSWidth(self.bounds) - iconSize) / 2.0,
-                                 (NSHeight(self.bounds) - iconSize) / 2.0,
-                                 iconSize, iconSize);
 }
 
 - (void)updateTrackingAreas {

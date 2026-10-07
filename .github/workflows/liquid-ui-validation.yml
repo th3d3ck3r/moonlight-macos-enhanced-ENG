@@ -62,6 +62,8 @@ jobs:
             echo 'Credential redaction failed for console output'
             exit 1
           fi
+      - name: Test floating handle display-cycle regression
+        run: bash tests/edge-menu/run.sh
       - name: Download native dependencies
         run: |
           curl --fail --location --retry 3 -o xcframeworks.zip https://github.com/coofdy/moonlight-mobile-deps/releases/download/latest/moonlight-apple-xcframeworks.zip

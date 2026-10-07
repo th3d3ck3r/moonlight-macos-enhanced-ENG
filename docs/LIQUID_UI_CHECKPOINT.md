@@ -28,3 +28,6 @@ Liquid UI Preview 7 publishes only artifacts from the successful run above, as a
 - Compare CPU/GPU/frame pacing with Manual Build 21, overlays hidden/visible. Compilation does not verify Intel runtime performance or working pairing/streaming.
 
 Next: perform the physical checklist above. No live pairing/streaming, CPU/GPU/frame-pacing comparison, multiple-display testing or physical Intel runtime testing was available. Future publication must update the validated run/SHA and review new captures after relevant source changes.
+
+## Physical testing follow-up — October 7
+User's Intel MacBookPro14,1 reports Finder-launched requests blocked as Local network prohibited. Installed Preview 7 executable is unsigned; Terminal launch restores host access. This is a separate release signing/permission issue, with no signing or backend changes in this UI fix. Pairing persisted and the app list loaded after Terminal launch. Stream start then crashed in MLEdgeMenuHandleView.layout: resizing NSImageView caused AppKit window constraint invalidation during display. Icon geometry now uses declarative constraints with no layout override. A native regression harness exercises production handle/material code over 200 display cycles, rectangular sizes and light/dark appearances. Full revalidation and corrected preview publication pending. Physical streaming is still unverified.
