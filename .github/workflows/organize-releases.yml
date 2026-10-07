@@ -1,0 +1,41 @@
+name: Organize Published Rebuild Releases
+on:
+  push:
+    branches: [rebuild-moonlight-6.2-english]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  organize:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[organize-releases]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Number completed releases and set Latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, subprocess
+          releases = [
+              ('native-6.2-rebuild-5', 'Moonlight Enhanced English — Standard Build 5'),
+              ('native-6.2-manual-1', 'Moonlight Enhanced English — Manual Build 1'),
+              ('native-6.2-rebuild-13', 'Moonlight Enhanced English — Standard Build 13'),
+              ('native-6.2-manual-2', 'Moonlight Enhanced English — Manual Build 2'),
+              ('native-6.2-rebuild-15', 'Moonlight Enhanced English — Standard Build 15'),
+              ('native-6.2-rebuild-17', 'Moonlight Enhanced English — Standard Build 17'),
+              ('native-6.2-manual-4', 'Moonlight Enhanced English — Manual Build 4 (Latest Manual)'),
+          ]
+          for tag, title in releases:
+              release = json.loads(subprocess.check_output(['gh', 'release', 'view', tag, '--json', 'assets,isDraft,isPrerelease']))
+              if release['isDraft'] or release['isPrerelease'] or len(release['assets']) != 2:
+                  raise SystemExit(f'Release {tag} is not a complete regular two-architecture release')
+              subprocess.run(['gh', 'release', 'edit', tag, '--title', title, '--latest=false'], check=True)
+              print(title)
+          subprocess.run(['gh', 'release', 'edit', 'native-6.2-rebuild-17', '--latest'], check=True)
+          latest = subprocess.check_output(['gh', 'api', 'repos/{owner}/{repo}/releases/latest', '--jq', '.tag_name'], text=True).strip()
+          if latest != 'native-6.2-rebuild-17':
+              raise SystemExit(f'Unexpected Latest release: {latest}')
+          print('Verified Latest: native-6.2-rebuild-17')
+          PY

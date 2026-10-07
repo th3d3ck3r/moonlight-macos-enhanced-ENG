@@ -31,7 +31,7 @@ Built with the protocol core used by **Moonlight PC v6.2.0 — the latest offici
 | **Intel — recommended for Intel Macs** | [Moonlight-x86_64.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-rebuild-17/Moonlight-x86_64.zip) |
 | **Intel + Apple Silicon** | [Moonlight-universal.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-rebuild-17/Moonlight-universal.zip) |
 
-[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-17) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/REBUILD_SHA256SUMS.txt)
+[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-17) · [Builds in order](docs/RELEASE_INDEX.md) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/REBUILD_SHA256SUMS.txt)
 
 > These packages are not Developer ID signed or notarized. macOS may require **System Settings → Privacy & Security → Open Anyway**. Privileged AWDL helper authorization has not been validated with a Developer ID signature.
 
