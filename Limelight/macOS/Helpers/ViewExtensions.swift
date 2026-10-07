@@ -175,6 +175,12 @@ private final class MoonlightMaterialBackground: NSView {
         } else {
             label.attributedStringValue = text
         }
+        let centered = NSMutableAttributedString(attributedString: label.attributedStringValue)
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        centered.addAttribute(.paragraphStyle, value: paragraph,
+                              range: NSRange(location: 0, length: centered.length))
+        label.attributedStringValue = centered
         label.setAccessibilityLabel(title + ". " + detail)
     }
 }

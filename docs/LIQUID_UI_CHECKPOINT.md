@@ -12,9 +12,9 @@ UI-only branch: `liquid-ui`. Functional baseline: `1e625482bc9e4d3d86007334bb632
 
 ## Validation
 Foundation commit: `68d9b280d2e49cf6b956bc66826d79fbfa897e42`.
-Foundation full x86_64 and Universal builds passed in run 37567534610, including common-c sanitizer, host-response, credential-redaction and packaged-app audits. Final milestone validation is pending.
+Foundation full x86_64 and Universal builds passed in run 37567534610, including common-c sanitizer, host-response, credential-redaction and packaged-app audits. Initial preview commit `7b99ed420a0abf3156b946a6f5f3dde731b03152` passed both full builds in run 37568059854. Actual captures exposed off-screen Settings placement and left-aligned empty-state text; both have been corrected. Revalidation is pending.
 Local English/LAN and update-isolation audits pass; storyboard/XIB XML parses and diff whitespace checks pass. No new project references, settings keys, bundle identity, signing or permission changes. No networking, common-c, decoding, input capture or renderer changes.
-Dedicated branch CI builds full x86_64 and Universal apps, runs common-c sanitizer, host-response and credential-redaction tests, audits packaged apps and verifies application/helper binary slices. Publication is a prerelease and cannot replace the latest Manual release.
+Dedicated branch CI builds full x86_64 and Universal apps, runs common-c sanitizer, host-response and credential-redaction tests, audits packaged apps and verifies application/helper binary slices. Publication must follow actual screenshot inspection and use only validated build artifacts. It is a prerelease and cannot replace the latest Manual release.
 Runner screenshots are attempted separately and may be blocked by GUI permissions. Smoke captures do not establish comprehensive physical testing. Chat concept imagery is a mockup.
 
 ## Physical Intel Tahoe checklist

@@ -93,7 +93,7 @@
 - (void)animateSelectedAndHoveredState {
     CGFloat oldScale = [self scaleForSelected:self.previousSelected hovered:self.previousHovered];
     CGFloat newScale = [self scaleForSelected:self.selected hovered:self.hovered];
-    if (fabs(oldScale - newScale) < 0.0001) {
+    if (fabs(oldScale - newScale) < 0.0001 && !NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion) {
         return;
     }
     

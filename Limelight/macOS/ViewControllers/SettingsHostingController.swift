@@ -25,6 +25,8 @@ class SettingsHostingController<RootView: View>: NSWindowController {
     window.titlebarSeparatorStyle = .automatic
     window.title = LanguageManager.shared.localize("Settings")
 
+    window.setContentSize(NSSize(width: 760, height: 580))
+    window.center()
     self.init(window: window)
 
     languageObserver = NotificationCenter.default.addObserver(

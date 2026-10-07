@@ -102,6 +102,34 @@ jobs:
           osascript -e 'tell application "System Events" to keystroke "," using command down'
           sleep 2
           screencapture -x screenshots/settings-actual.png
+          for pane in Video Audio Input App; do
+            osascript - "$pane" <<'APPLESCRIPT'
+          on run argv
+            tell application "System Events"
+              tell process "Moonlight"
+                set controls to entire contents of front window
+                repeat with control in controls
+                  try
+                    if class of control is static text and (value of control as text) is item 1 of argv then
+                      click control
+                      return
+                    end if
+                  end try
+                end repeat
+                error "Settings pane could not be selected"
+              end tell
+            end tell
+          end run
+          APPLESCRIPT
+            sleep 1
+            screencapture -x "screenshots/settings-$pane-actual.png"
+          done
+          osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
+          sleep 2
+          screencapture -x screenshots/settings-dark-actual.png
+          osascript -e 'tell application "System Events" to keystroke "w" using command down'
+          sleep 1
+          screencapture -x screenshots/main-window-dark-actual.png
           osascript -e 'tell application "System Events" to keystroke "q" using command down'
       - uses: actions/upload-artifact@v6
         if: matrix.variant == 'universal' && always()
@@ -117,26 +145,3 @@ jobs:
             build.log
             Moonlight-manual-${{ matrix.variant }}.zip
           if-no-files-found: warn
-  release:
-    name: Publish validated Liquid UI preview
-    needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/liquid-ui' && contains(github.event.head_commit.message, '[liquid-preview]')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: native-manual-*
-          path: release-artifacts
-      - name: Publish Intel and Universal downloads
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          gh release create "liquid-ui-preview-${{ github.run_number }}" \
-            release-artifacts/native-manual-x86_64/Moonlight-manual-x86_64.zip \
-            release-artifacts/native-manual-universal/Moonlight-manual-universal.zip \
-            --target '${{ github.sha }}' --prerelease --latest=false \
-            --title 'Moonlight Enhanced — Liquid UI Preview ${{ github.run_number }}' \
-            --notes-file docs/LIQUID_UI_CHECKPOINT.md
