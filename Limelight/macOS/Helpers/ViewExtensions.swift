@@ -164,18 +164,15 @@ private final class MoonlightMaterialBackground: NSView {
             .font: NSFont.systemFont(ofSize: NSFont.systemFontSize),
             .foregroundColor: NSColor.secondaryLabelColor
         ]))
+        let centered = NSMutableAttributedString(string: "")
         if let image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil) {
             image.size = NSSize(width: 32, height: 32)
             let attachment = NSTextAttachment()
             attachment.image = image
-            let heading = NSMutableAttributedString(attachment: attachment)
-            heading.append(NSAttributedString(string: "\n\n"))
-            heading.append(text)
-            label.attributedStringValue = heading
-        } else {
-            label.attributedStringValue = text
+            centered.append(NSAttributedString(attachment: attachment))
+            centered.append(NSAttributedString(string: "\n\n"))
         }
-        let centered = NSMutableAttributedString(attributedString: label.attributedStringValue)
+        centered.append(text)
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         centered.addAttribute(.paragraphStyle, value: paragraph,

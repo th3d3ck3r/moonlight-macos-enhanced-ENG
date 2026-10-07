@@ -73,29 +73,16 @@ jobs:
           sleep 2
           screencapture -x screenshots/settings-actual.png
           for pane in Video Audio Input App; do
-            osascript - "$pane" <<'APPLESCRIPT'
-          on run argv
-            tell application "System Events"
-              tell process "Moonlight"
-                set paneElements to entire contents of front window
-                repeat with paneElement in paneElements
-                  try
-                    if class of paneElement is static text and (value of paneElement as text) is item 1 of argv then
-                      click paneElement
-                      return
-                    end if
-                  end try
-                end repeat
-                repeat with paneElement in paneElements
-                  try
-                    log ((class of paneElement as text) & " | " & (name of paneElement as text) & " | " & (value of paneElement as text))
-                  end try
-                end repeat
-                error "Settings pane could not be selected"
-              end tell
-            end tell
-          end run
-          APPLESCRIPT
+            # Native pointer clicks use sidebar row positions observed in the
+            # centered 760x580 Settings window on this guarded runner display.
+            swift - "$pane" <<'SWIFT'
+          import CoreGraphics
+          let rows: [String: Double] = ["Video": 170, "Audio": 203, "Input": 235, "App": 267]
+          guard let name = CommandLine.arguments.last, let y = rows[name] else { fatalError("Unknown pane") }
+          let point = CGPoint(x: 200, y: y)
+          CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+          CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+          SWIFT
             sleep 1
             screencapture -x "screenshots/settings-$pane-actual.png"
           done

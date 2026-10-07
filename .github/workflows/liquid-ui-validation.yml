@@ -97,30 +97,60 @@ jobs:
           defaults write "$bundle" welcome.permissions.shown.v1 -bool true
           open "$app"
           sleep 5
+          osascript <<'APPLESCRIPT'
+          tell application "System Events"
+            repeat with candidateProcess in application processes
+              try
+                repeat with candidateWindow in windows of candidateProcess
+                  set permissionElements to entire contents of candidateWindow
+                  set permissionText to ""
+                  repeat with permissionElement in permissionElements
+                    try
+                      if class of permissionElement is static text then set permissionText to permissionText & (value of permissionElement as text)
+                    end try
+                  end repeat
+                  if permissionText contains "Moonlight" and permissionText contains "local network" then
+                    repeat with permissionElement in permissionElements
+                      try
+                        if class of permissionElement is button and name of permissionElement is "Allow" then click permissionElement
+                      end try
+                    end repeat
+                  end if
+                end repeat
+              end try
+            end repeat
+          end tell
+          APPLESCRIPT
+          # Coordinate fallback is grounded in the captured 1024x768 runner
+          # permission dialog. A click on empty content is harmless if dismissed.
+          swift - <<'SWIFT'
+          import CoreGraphics
+          let display = CGMainDisplayID()
+          guard CGDisplayPixelsWide(display) == 1024 && CGDisplayPixelsHigh(display) == 768 else {
+              fatalError("Runner display changed; review permission-dialog coordinates")
+          }
+          let point = CGPoint(x: 572, y: 339)
+          CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+          CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+          SWIFT
+          sleep 2
+          osascript -e 'tell application "Moonlight" to activate'
           mkdir -p screenshots
           screencapture -x screenshots/main-window-actual.png
           osascript -e 'tell application "System Events" to keystroke "," using command down'
           sleep 2
           screencapture -x screenshots/settings-actual.png
           for pane in Video Audio Input App; do
-            osascript - "$pane" <<'APPLESCRIPT'
-          on run argv
-            tell application "System Events"
-              tell process "Moonlight"
-                set controls to entire contents of front window
-                repeat with control in controls
-                  try
-                    if class of control is static text and (value of control as text) is item 1 of argv then
-                      click control
-                      return
-                    end if
-                  end try
-                end repeat
-                error "Settings pane could not be selected"
-              end tell
-            end tell
-          end run
-          APPLESCRIPT
+            # Native pointer clicks use sidebar row positions observed in the
+            # centered 760x580 Settings window on this guarded runner display.
+            swift - "$pane" <<'SWIFT'
+          import CoreGraphics
+          let rows: [String: Double] = ["Video": 170, "Audio": 203, "Input": 235, "App": 267]
+          guard let name = CommandLine.arguments.last, let y = rows[name] else { fatalError("Unknown pane") }
+          let point = CGPoint(x: 200, y: y)
+          CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+          CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+          SWIFT
             sleep 1
             screencapture -x "screenshots/settings-$pane-actual.png"
           done

@@ -228,7 +228,6 @@ struct PaneCellView: View {
 
     HStack(spacing: 6) {
       Image(systemName: pane.symbol)
-        .adaptiveForegroundColor(.accentColor)
         .font(.callout)
         .frame(width: containerSize, height: containerSize)
         .padding(1)
