@@ -103,12 +103,8 @@ struct SettingsView: View {
   }
 
   var body: some View {
-    NavigationView {
-      Sidebar(selectedPane: $selectedPane)
-      Detail(pane: selectedPane)
-        .environmentObject(settingsModel)
-    }
-    .frame(minWidth: 575, minHeight: 275)
+    navigationContent
+    .frame(minWidth: 640, minHeight: 420)
     .onAppear {
       if selectedPane == .legacy {
         selectedPane = .app
@@ -121,6 +117,22 @@ struct SettingsView: View {
       }
     }
   }
+
+  @ViewBuilder private var navigationContent: some View {
+    if #available(macOS 13.0, *) {
+      NavigationSplitView {
+        Sidebar(selectedPane: $selectedPane)
+      } detail: {
+        Detail(pane: selectedPane).environmentObject(settingsModel)
+      }
+    } else {
+      NavigationView {
+        Sidebar(selectedPane: $selectedPane)
+        Detail(pane: selectedPane).environmentObject(settingsModel)
+      }
+    }
+  }
+
 }
 
 struct Sidebar: View {

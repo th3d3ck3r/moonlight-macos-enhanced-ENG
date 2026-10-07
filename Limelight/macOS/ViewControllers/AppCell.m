@@ -69,12 +69,13 @@
 }
 
 - (CGFloat)scaleForSelected:(BOOL)selected hovered:(BOOL)hovered {
+    if (NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion) { return 1; }
     CGFloat scale = 1;
     if (selected) {
-        scale *= 1.15;
+        scale *= 1.03;
     }
     if (hovered) {
-        scale *= 1.1;
+        scale *= 1.02;
     }
     return scale;
 }
@@ -104,14 +105,14 @@
     animation.fromValue = [NSValue valueWithCATransform3D:oldTransform];
     animation.toValue = [NSValue valueWithCATransform3D:newTransform];
     animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseOut];
-    animation.duration = 0.2;
+    animation.duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : 0.2;
     animation.beginTime = 0.0;
     
     [self.view.layer addAnimation:animation forKey:nil];
     self.view.layer.transform = newTransform;
     
     [NSAnimationContext beginGrouping];
-    [NSAnimationContext currentContext].duration = 0.4;
+    [NSAnimationContext currentContext].duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : 0.2;
     self.appCoverArt.superview.animator.alphaValue = [self appCoverArtAlphaWithHovered:self.hovered];
     [NSAnimationContext endGrouping];
     
@@ -157,7 +158,7 @@
     self.togglingHideStatus = YES;
     if (animate) {
         [NSAnimationContext beginGrouping];
-        [NSAnimationContext currentContext].duration = 0.4;
+        [NSAnimationContext currentContext].duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : 0.2;
         [NSAnimationContext currentContext].completionHandler = ^{
             self.togglingHideStatus = NO;
         };
@@ -182,7 +183,7 @@
     self.appName.textColor = selected ? [NSColor alternateSelectedControlTextColor] : [NSColor textColor];
 
     [NSAnimationContext beginGrouping];
-    [NSAnimationContext currentContext].duration = 0.4;
+    [NSAnimationContext currentContext].duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : 0.2;
     self.appCoverArt.superview.animator.alphaValue = [self appCoverArtAlphaWithHovered:NO];
     [NSAnimationContext endGrouping];
 

@@ -159,23 +159,17 @@
     container.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
     container.autoresizesSubviews = YES;
 
-    NSVisualEffectView *pill = [[NSVisualEffectView alloc] initWithFrame:container.bounds];
+    NSView *pill = [MLNavigationMaterial makeViewWithFrame:container.bounds cornerRadius:containerHeight * 0.5];
     pill.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    pill.material = NSVisualEffectMaterialHUDWindow;
-    pill.blendingMode = NSVisualEffectBlendingModeWithinWindow;
-    pill.state = NSVisualEffectStateActive;
-    pill.wantsLayer = YES;
-    pill.layer.cornerRadius = containerHeight * 0.5;
-    pill.layer.masksToBounds = YES;
     [container addSubview:pill];
 
     NSView *content = [[NSView alloc] initWithFrame:pill.bounds];
     content.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
-    [pill addSubview:content];
+    [container addSubview:content];
 
     NSImageView *signalImageView = [[NSImageView alloc] initWithFrame:NSMakeRect(10.0, 6.0, 16.0, 16.0)];
     signalImageView.imageScaling = NSImageScaleProportionallyUpOrDown;
-    signalImageView.contentTintColor = [NSColor whiteColor];
+    signalImageView.contentTintColor = [NSColor labelColor];
     [content addSubview:signalImageView];
 
     NSTextField *timeLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(32.0, 6.0, 70.0, 16.0)];
@@ -185,7 +179,7 @@
     timeLabel.selectable = NO;
     timeLabel.alignment = NSTextAlignmentLeft;
     timeLabel.font = [NSFont monospacedDigitSystemFontOfSize:13.0 weight:NSFontWeightRegular];
-    timeLabel.textColor = [NSColor whiteColor];
+    timeLabel.textColor = [NSColor labelColor];
     timeLabel.stringValue = @"00:00";
     [content addSubview:timeLabel];
 
@@ -196,7 +190,7 @@
     titleLabel.selectable = NO;
     titleLabel.alignment = NSTextAlignmentRight;
     titleLabel.font = [NSFont systemFontOfSize:13.0 weight:NSFontWeightSemibold];
-    titleLabel.textColor = [NSColor whiteColor];
+    titleLabel.textColor = [NSColor labelColor];
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     titleLabel.stringValue = [self currentStreamHealthBadgeText];
     [content addSubview:titleLabel];

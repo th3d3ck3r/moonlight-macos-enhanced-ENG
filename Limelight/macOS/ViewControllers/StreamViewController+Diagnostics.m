@@ -166,7 +166,7 @@
         titleLabel.selectable = NO;
         titleLabel.alignment = NSTextAlignmentCenter;
         titleLabel.font = [NSFont systemFontOfSize:22 weight:NSFontWeightBold];
-        titleLabel.textColor = [NSColor whiteColor];
+        titleLabel.textColor = [NSColor labelColor];
 
         // Message
         NSTextField *label = [[NSTextField alloc] initWithFrame:NSZeroRect];
@@ -176,7 +176,7 @@
         label.selectable = YES; // Allow copying error message
         label.alignment = NSTextAlignmentCenter;
         label.font = [NSFont systemFontOfSize:14 weight:NSFontWeightMedium];
-        label.textColor = [NSColor colorWithWhite:0.9 alpha:1.0];
+        label.textColor = [NSColor secondaryLabelColor];
         if ([label.cell isKindOfClass:[NSTextFieldCell class]]) {
             NSTextFieldCell *cell = (NSTextFieldCell *)label.cell;
             cell.wraps = YES;
@@ -205,19 +205,13 @@
         exitBtn.controlSize = NSControlSizeLarge;
 
         // --- Settings Strip ---
-        // Create custom "card" buttons to match screenshot design:
-        // Dark background, rounded corners (6pt), Icon + Text
         
         NSButton *(^createSettingsBtn)(NSString *, NSString *, SEL) = ^(NSString *title, NSString *iconName, SEL selector) {
             NSButton *btn = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 100, 28)];
             btn.target = self;
             btn.action = selector;
-            btn.bezelStyle = NSBezelStyleRegularSquare;
-            btn.bordered = NO; // We draw our own background
-            btn.wantsLayer = YES;
-            btn.layer.backgroundColor = [[NSColor colorWithWhite:1.0 alpha:0.1] CGColor]; // Semi-transparent white => looks like lighter dark grey on dark background
-            btn.layer.cornerRadius = 6.0;
-            btn.layer.masksToBounds = YES;
+            btn.bezelStyle = NSBezelStyleRounded;
+            btn.bordered = YES;
             
             btn.title = title;
             btn.font = [NSFont systemFontOfSize:12 weight:NSFontWeightMedium];
@@ -227,7 +221,7 @@
             if (@available(macOS 11.0, *)) {
                 btn.image = [NSImage imageWithSystemSymbolName:iconName accessibilityDescription:nil];
                 btn.imagePosition = NSImageLeading;
-                btn.contentTintColor = [NSColor whiteColor];
+                btn.contentTintColor = [NSColor labelColor];
                 // 设置图标和文字的间距
                 btn.imageHugsTitle = YES;
                 // 调整按钮对齐方式为居中
@@ -2095,7 +2089,7 @@
     statusLabel.editable = NO;
     statusLabel.selectable = NO;
     statusLabel.font = [NSFont monospacedSystemFontOfSize:11 weight:NSFontWeightRegular];
-    statusLabel.textColor = [NSColor colorWithWhite:0.85 alpha:1.0];
+    statusLabel.textColor = [NSColor secondaryLabelColor];
     statusLabel.tag = 1005;
     statusLabel.stringValue = @"Showing 0 lines";
     [self.logOverlayContainer addSubview:statusLabel];
@@ -2109,7 +2103,7 @@
     self.logOverlayTextView.selectable = YES;
     self.logOverlayTextView.drawsBackground = NO;
     self.logOverlayTextView.font = [NSFont monospacedSystemFontOfSize:12 weight:NSFontWeightRegular];
-    self.logOverlayTextView.textColor = [NSColor whiteColor];
+    self.logOverlayTextView.textColor = [NSColor labelColor];
     
     self.logOverlayTextView.minSize = NSMakeSize(0.0, 0.0);
     self.logOverlayTextView.maxSize = NSMakeSize(FLT_MAX, FLT_MAX);
@@ -2297,7 +2291,7 @@
         self.reconnectOverlayContainer.blendingMode = NSVisualEffectBlendingModeWithinWindow;
         self.reconnectOverlayContainer.state = NSVisualEffectStateActive;
         self.reconnectOverlayContainer.wantsLayer = YES;
-        self.reconnectOverlayContainer.layer.backgroundColor = [[NSColor colorWithWhite:0 alpha:0.55] CGColor];
+
 
         self.reconnectSpinner = [[NSProgressIndicator alloc] initWithFrame:NSZeroRect];
         self.reconnectSpinner.style = NSProgressIndicatorStyleSpinning;
@@ -2310,7 +2304,7 @@
         self.reconnectLabel.editable = NO;
         self.reconnectLabel.selectable = NO;
         self.reconnectLabel.font = [NSFont systemFontOfSize:15 weight:NSFontWeightSemibold];
-        self.reconnectLabel.textColor = [NSColor whiteColor];
+        self.reconnectLabel.textColor = [NSColor labelColor];
         self.reconnectLabel.alignment = NSTextAlignmentCenter;
 
         [self.reconnectOverlayContainer addSubview:self.reconnectSpinner];
@@ -2577,7 +2571,7 @@
     NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] init];
     
     NSDictionary *labelAttrs = @{
-        NSForegroundColorAttributeName: [NSColor whiteColor],
+        NSForegroundColorAttributeName: [NSColor labelColor],
         NSFontAttributeName: [NSFont systemFontOfSize:13 weight:NSFontWeightRegular]
     };
     
@@ -2696,7 +2690,7 @@
     self.connectionWarningLabel.editable = NO;
     self.connectionWarningLabel.selectable = NO;
     self.connectionWarningLabel.font = [NSFont systemFontOfSize:13 weight:NSFontWeightSemibold];
-    self.connectionWarningLabel.textColor = [NSColor whiteColor];
+    self.connectionWarningLabel.textColor = [NSColor labelColor];
     
     // Use a warning symbol if possible, or just text
     NSString *warningText = MLString(@"Poor Connection", @"Connection warning overlay");
@@ -3061,7 +3055,7 @@
     self.mouseModeLabel.editable = NO;
     self.mouseModeLabel.selectable = NO;
     self.mouseModeLabel.font = [NSFont systemFontOfSize:24 weight:NSFontWeightRegular]; // Larger font for icon
-    self.mouseModeLabel.textColor = [NSColor whiteColor];
+    self.mouseModeLabel.textColor = [NSColor labelColor];
     self.mouseModeLabel.stringValue = @"🖱️";
     [self.mouseModeLabel sizeToFit];
 
@@ -3142,7 +3136,7 @@
     self.notificationLabel.editable = NO;
     self.notificationLabel.selectable = NO;
     self.notificationLabel.font = [NSFont systemFontOfSize:16 weight:NSFontWeightBold];
-    self.notificationLabel.textColor = [NSColor whiteColor];
+    self.notificationLabel.textColor = [NSColor labelColor];
     self.notificationLabel.stringValue = message;
     [self.notificationLabel sizeToFit];
 

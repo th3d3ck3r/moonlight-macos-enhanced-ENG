@@ -13,6 +13,7 @@ import CoreGraphics
 import SwiftUI
 
 struct StreamView: View {
+  @Environment(\.accessibilityReduceMotion) private var reduceMotion
   @EnvironmentObject private var settingsModel: SettingsModel
   @ObservedObject var languageManager = LanguageManager.shared
 
@@ -638,36 +639,36 @@ struct StreamView: View {
         updateRemoteCustomResolutionGroup()
         updateRemoteCustomFpsGroup()
         settingsModel.resolutionChangedCallback = {
-          withAnimation {
+          withAnimation(reduceMotion ? nil : .default) {
             updateCustomResolutionGroup()
           }
         }
         settingsModel.fpsChangedCallback = {
-          withAnimation {
+          withAnimation(reduceMotion ? nil : .default) {
             updateCustomFpsGroup()
           }
         }
       }
       .onChange(of: settingsModel.remoteResolutionEnabled) { _ in
-        withAnimation {
+        withAnimation(reduceMotion ? nil : .default) {
           showRemoteCustomResolutionGroup =
             settingsModel.remoteResolutionEnabled && settingsModel.selectedRemoteResolution == .zero
         }
       }
       .onChange(of: settingsModel.selectedRemoteResolution) { _ in
-        withAnimation {
+        withAnimation(reduceMotion ? nil : .default) {
           showRemoteCustomResolutionGroup =
             settingsModel.remoteResolutionEnabled && settingsModel.selectedRemoteResolution == .zero
         }
       }
       .onChange(of: settingsModel.remoteFpsEnabled) { _ in
-        withAnimation {
+        withAnimation(reduceMotion ? nil : .default) {
           showRemoteCustomFpsGroup =
             settingsModel.remoteFpsEnabled && settingsModel.selectedRemoteFps == .zero
         }
       }
       .onChange(of: settingsModel.selectedRemoteFps) { _ in
-        withAnimation {
+        withAnimation(reduceMotion ? nil : .default) {
           showRemoteCustomFpsGroup =
             settingsModel.remoteFpsEnabled && settingsModel.selectedRemoteFps == .zero
         }

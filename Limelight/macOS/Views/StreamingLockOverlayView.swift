@@ -44,7 +44,6 @@ struct StreamingLockOverlayView: View {
     let onDisconnect: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @SwiftUI.State private var languageVersion = 0
 
     var body: some View {
@@ -127,7 +126,6 @@ struct OfflineHostOverlayView: View {
 
     @SwiftUI.State private var isWaking = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @SwiftUI.State private var languageVersion = 0
     @SwiftUI.State private var refreshRotation = 0.0
 

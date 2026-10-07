@@ -33,7 +33,8 @@ static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/th3d3c
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.backgroundEffectView.material = NSVisualEffectMaterialMenu;
+    self.backgroundEffectView.material = NSVisualEffectMaterialWindowBackground;
+    self.backgroundEffectView.state = NSVisualEffectStateFollowsWindowActiveState;
 
     [self setPreferredContentSize:NSMakeSize(self.view.bounds.size.width, self.view.bounds.size.height)];
 
@@ -53,7 +54,7 @@ static NSString * const MoonlightEnhancedReadmeURL = @"https://github.com/th3d3c
 }
 
 - (void)refreshAboutContent {
-    self.versionNumberTextField.stringValue = [[Helpers versionNumberString] stringByAppendingString:@" (manual)"];
+    self.versionNumberTextField.stringValue = [[Helpers versionNumberString] stringByAppendingString:@" (Liquid UI preview · manual)"];
     self.versionNumberTextField.toolTip = @"Manual updates only. Download future versions from this project’s GitHub releases.";
     self.copyrightTextField.stringValue = [Helpers copyrightString];
 

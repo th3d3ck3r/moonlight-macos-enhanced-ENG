@@ -363,7 +363,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
     // Animate in
     overlayView.alphaValue = 0.0;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-        context.duration = 0.25;
+        context.duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : 0.25;
         overlayView.animator.alphaValue = 1.0;
     } completionHandler:nil];
 }
@@ -402,7 +402,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
     self.lockOverlayHostingController = nil; // Clear reference first
 
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-        context.duration = 0.2;
+        context.duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : 0.2;
         overlayVC.view.animator.alphaValue = 0.0;
     } completionHandler:^{
         [overlayVC.view removeFromSuperview];
@@ -442,7 +442,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
     // Animate in
     overlayView.alphaValue = 0.0;
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-        context.duration = 0.25;
+        context.duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : 0.25;
         overlayView.animator.alphaValue = 1.0;
     } completionHandler:nil];
 }
@@ -468,7 +468,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
     self.offlineOverlayHostUUID = nil;
 
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
-        context.duration = 0.2;
+        context.duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : 0.2;
         overlayVC.view.animator.alphaValue = 0.0;
     } completionHandler:^{
         [overlayVC.view removeFromSuperview];
@@ -1270,7 +1270,7 @@ static const CGFloat runningAnimationDuration = 1.0;
     // Create an NSAnimationContext for smoother animations
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         // Set the duration of the animation
-        context.duration = runningAnimationDuration;
+        context.duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : runningAnimationDuration;
         
         // Fade out the runningIconContainer
         oldItem.runningIconContainer.animator.alphaValue = 0.0;
@@ -1294,7 +1294,7 @@ static const CGFloat runningAnimationDuration = 1.0;
     // Now, if you want to fade in the runningIconContainer
     [NSAnimationContext runAnimationGroup:^(NSAnimationContext *context) {
         // Set the duration of the animation
-        context.duration = runningAnimationDuration;
+        context.duration = NSWorkspace.sharedWorkspace.accessibilityDisplayShouldReduceMotion ? 0 : runningAnimationDuration;
         
         // Fade in the runningIconContainer
         newItem.runningIconContainer.hidden = NO;

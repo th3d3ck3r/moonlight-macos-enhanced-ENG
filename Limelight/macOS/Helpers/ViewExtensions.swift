@@ -6,6 +6,7 @@
 //  Copyright © 2024 Moonlight Game Streaming Project. All rights reserved.
 //
 
+import AppKit
 import SwiftUI
 
 extension View {
@@ -54,5 +55,78 @@ private struct MoonlightNavigationGlass: ViewModifier {
 extension View {
     func moonlightNavigationGlass(cornerRadius: CGFloat = 16) -> some View {
         modifier(MoonlightNavigationGlass(radius: cornerRadius))
+    }
+}
+
+// A background-only AppKit bridge. Callers retain their existing controls,
+// responder chain, sizing and callbacks; this never owns a streaming surface.
+@objc(MLNavigationMaterial) final class MLNavigationMaterial: NSObject {
+    @objc(makeViewWithFrame:cornerRadius:)
+    static func makeView(frame: NSRect, cornerRadius: CGFloat) -> NSView {
+        MoonlightMaterialBackground(frame: frame, radius: cornerRadius)
+    }
+}
+
+private final class MoonlightMaterialBackground: NSView {
+    private let radius: CGFloat
+    private var displayObserver: NSObjectProtocol?
+
+    init(frame: NSRect, radius: CGFloat) {
+        self.radius = radius
+        super.init(frame: frame)
+        refreshMaterial()
+        displayObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification,
+            object: nil, queue: .main
+        ) { [weak self] _ in self?.refreshMaterial() }
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) is not supported") }
+
+    deinit {
+        if let displayObserver { NSWorkspace.shared.notificationCenter.removeObserver(displayObserver) }
+    }
+
+    // The background is decorative: pointer events belong to the existing controls.
+    override func hitTest(_ point: NSPoint) -> NSView? { nil }
+
+    override func viewDidChangeEffectiveAppearance() {
+        super.viewDidChangeEffectiveAppearance()
+        refreshMaterial()
+    }
+
+    private func refreshMaterial() {
+        subviews.forEach { $0.removeFromSuperview() }
+        wantsLayer = true
+        layer?.backgroundColor = nil
+        let workspace = NSWorkspace.shared
+        if workspace.accessibilityDisplayShouldReduceTransparency || workspace.accessibilityDisplayShouldIncreaseContrast {
+            effectiveAppearance.performAsCurrentDrawingAppearance {
+                layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+                layer?.borderColor = NSColor.separatorColor.cgColor
+            }
+            layer?.borderWidth = 1
+            layer?.cornerRadius = radius
+        } else {
+            layer?.borderWidth = 0
+            let material: NSView
+            if #available(macOS 26.0, *) {
+                let glass = NSGlassEffectView(frame: bounds)
+                glass.cornerRadius = radius
+                glass.contentView = NSView(frame: bounds)
+                material = glass
+            } else {
+                let visual = NSVisualEffectView(frame: bounds)
+                visual.material = .popover
+                visual.blendingMode = .withinWindow
+                visual.state = .followsWindowActiveState
+                visual.wantsLayer = true
+                visual.layer?.cornerRadius = radius
+                visual.layer?.masksToBounds = true
+                material = visual
+            }
+            material.autoresizingMask = [.width, .height]
+            addSubview(material)
+        }
     }
 }
