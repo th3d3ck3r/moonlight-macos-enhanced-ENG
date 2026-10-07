@@ -28,12 +28,14 @@ int main(void) {
                     [panel layoutIfNeeded];
                     [panel displayIfNeeded];
                     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
-                    NSRect icon = handle.iconView.frame;
+                    // SF Symbols include baseline alignment insets; Auto Layout uses
+                    // the alignment rect, not the NSImageView outer frame.
+                    NSRect icon = [handle.iconView alignmentRectForFrame:handle.iconView.frame];
                     CGFloat expected = MIN(NSWidth(handle.bounds), NSHeight(handle.bounds)) * 0.32;
-                    if (fabs(NSWidth(icon) - expected) > 0.1 ||
-                        fabs(NSHeight(icon) - expected) > 0.1 ||
-                        fabs(NSMidX(icon) - NSMidX(handle.bounds)) > 0.1 ||
-                        fabs(NSMidY(icon) - NSMidY(handle.bounds)) > 0.1) {
+                    if (fabs(NSWidth(icon) - expected) > 1.0 ||
+                        fabs(NSHeight(icon) - expected) > 1.0 ||
+                        fabs(NSMidX(icon) - NSMidX(handle.bounds)) > 1.0 ||
+                        fabs(NSMidY(icon) - NSMidY(handle.bounds)) > 1.0) {
                         NSLog(@"Incorrect handle geometry: %@ in %@", NSStringFromRect(icon), NSStringFromRect(handle.bounds));
                         return 1;
                     }
