@@ -4,7 +4,7 @@
 
 ### Native streaming. English UI. Intel Macs welcome.
 
-[![Build validation](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/workflows/rebuild-validation.yml/badge.svg?branch=rebuild-moonlight-6.2-english)](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/workflows/rebuild-validation.yml)
+[![Build validation](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/workflows/rebuild-validation.yml/badge.svg?branch=master)](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/workflows/rebuild-validation.yml)
 [![Moonlight PC reference](https://img.shields.io/badge/Moonlight_PC-6.2.0-blue)](https://github.com/moonlight-stream/moonlight-qt/releases/tag/v6.2.0)
 ![Intel and Universal](https://img.shields.io/badge/macOS-Intel_%2B_Universal-silver)
 ![Release channel](https://img.shields.io/badge/channel-Release-green)
@@ -28,14 +28,14 @@ Built with the protocol core used by **Moonlight PC v6.2.0 — the latest offici
 
 | Your Mac | Download |
 |---|---|
-| **Intel — recommended for Intel Macs** | [Moonlight-x86_64.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-rebuild-17/Moonlight-x86_64.zip) |
-| **Intel + Apple Silicon** | [Moonlight-universal.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-rebuild-17/Moonlight-universal.zip) |
+| **Intel — recommended for Intel Macs** | [Moonlight-manual-x86_64.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-manual-4/Moonlight-manual-x86_64.zip) |
+| **Intel + Apple Silicon** | [Moonlight-manual-universal.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-manual-4/Moonlight-manual-universal.zip) |
 
-[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-17) · [Builds in order](docs/RELEASE_INDEX.md) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/REBUILD_SHA256SUMS.txt)
+[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-4) · [Builds in order](docs/RELEASE_INDEX.md) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/MANUAL_SHA256SUMS.txt)
 
 > These packages are not Developer ID signed or notarized. macOS may require **System Settings → Privacy & Security → Open Anyway**. Privileged AWDL helper authorization has not been validated with a Developer ID signature.
 
-**Separate manual-update-only build:** [Intel and Universal downloads](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-4). It labels manual updates in About, uses this fork’s repository links, and audits packages for updater/feed components. The clean baseline already had no automatic app updater. Choose one Moonlight.app package when installing.
+**Manual updates only:** [Intel and Universal downloads](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-4). It labels manual updates in About, uses this fork’s repository links, and audits packages for updater/feed components. The clean baseline already had no automatic app updater. Older Standard releases are kept as history; future builds use this Manual edition.
 
 ## ✨ Features
 
@@ -103,7 +103,7 @@ A native Tahoe UI refresh is planned: polished Settings, clearer sidebars/toolba
 
 The [latest code-review report](docs/CODE_REVIEW_2026_10_06.md) records the follow-up fixes and test limits. The detailed [integration report](docs/MOONLIGHT_6_2_REBUILD.md) records exact upstream commits, conflict resolutions, selected native ports, exclusions, build results, warnings and the [Intel Tahoe test checklist](docs/MOONLIGHT_6_2_REBUILD.md#intel-tahoe-test-checklist).
 
-**Intel-only and Universal full builds passed** in [the release validation run](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37545875198). The Intel package was cross-compiled with an explicit x86_64 target on the Tahoe Apple Silicon runner; physical Intel streaming remains untested.
+**Intel-only and Universal full builds passed** in [the release validation run](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37545859459). The Intel package was cross-compiled with an explicit x86_64 target on the Tahoe Apple Silicon runner; physical Intel streaming remains untested.
 
 Automated checks cover full Intel/Universal application builds, executable/helper architecture checks, recursive submodule checkout, English/LAN bundle declarations, common-c FEC/crypto/input boundaries, production host XML and logger redaction tests, RTSP malformed-input tests, and production clipboard receive tests.
 
@@ -112,7 +112,7 @@ Automated checks cover full Intel/Universal application builds, executable/helpe
 ## 🛠️ Build from source
 
 ```bash
-git clone --recurse-submodules --branch rebuild-moonlight-6.2-english \
+git clone --recurse-submodules --branch master \
   https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG.git
 cd moonlight-macos-enhanced-ENG
 
@@ -125,6 +125,8 @@ xcodebuild -project Moonlight.xcodeproj -scheme 'Moonlight for macOS' \
   -destination 'generic/platform=macOS' ARCHS=x86_64 ONLY_ACTIVE_ARCH=NO \
   CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY='' build
 ```
+
+The English, manual-update-only edition now builds directly from `master` ([branch policy](docs/BRANCH_CONSOLIDATION.md)). Download future updates from this fork’s GitHub releases. There is no automatic updater.
 
 For Universal, use `ARCHS='x86_64 arm64'`. Xcode 26.6 was used for the Tahoe builds. The common-c submodule points to [the maintained Enhanced fork](https://github.com/th3d3ck3r/moonlight-common-c/tree/rebuild-moonlight-6.2-enhanced), with its custom extensions preserved.
 

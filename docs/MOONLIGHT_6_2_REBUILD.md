@@ -4,7 +4,7 @@ This rebuild retains the native macOS Enhanced application. It does not turn it 
 
 ## Sources and maintained branches
 
-- Main: `th3d3ck3r/moonlight-macos-enhanced-ENG`, `rebuild-moonlight-6.2-english`.
+- Main: `th3d3ck3r/moonlight-macos-enhanced-ENG`, `master`. The English Manual edition is now the sole maintained edition; see `docs/BRANCH_CONSOLIDATION.md`.
 - Clean Enhanced baseline: `a9f20cc28b8932fb55788144c700e964fbbefa26`. Existing English/local-network commits through `1f9624bbfe394f681394f22abc0435de303f4b43` remain ancestors.
 - Customized common-c baseline: `f262d597f41c2c6cbccf2c034191d14b62a1f043`.
 - Official Qt review: `v6.1.0..v6.2.0`, endpoint `de2467e433821664cdd2224aad8c89a625be1ad9`.
@@ -149,7 +149,7 @@ Recognition-only Chinese literals remain internally for detecting OS error messa
 
 ## Separate manual-update-only release
 
-- Branch: `rebuild-moonlight-6.2-english-manual`; validated release source `bbe2973bb5ac3225a3a0023386dc4cd347c3414c`.
+- Original Manual branch (archived after consolidation): `rebuild-moonlight-6.2-english-manual`; validated release source `bbe2973bb5ac3225a3a0023386dc4cd347c3414c`.
 - [Run 37530026373](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37530026373): complete x86_64 and Universal Release builds passed; main/helper slices, common-c tests, native XML regression tests, English/LAN bundle audits and manual-update source/bundle audits all passed. Same remaining upstream/signing/AppIntents warnings as the primary release.
 - [Separate downloads](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-1): `Moonlight-manual-x86_64.zip` and `Moonlight-manual-universal.zip`.
 - The baseline already contained no app updater. This variant labels manual updates in About, points About/welcome links to the maintained fork, and rejects known updater/feed components during packaging. Debug-log polling remains enabled. This does not remove or replace the maintained common-c dependency.
