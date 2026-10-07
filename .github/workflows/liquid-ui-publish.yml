@@ -48,7 +48,7 @@ jobs:
           cp release-artifacts/native-manual-universal/Moonlight-manual-universal.zip downloads/Moonlight-Liquid-UI-Universal.zip
           (cd downloads && sha256sum *.zip > SHA256SUMS.txt)
           gh release create liquid-ui-preview-13 downloads/*.zip downloads/SHA256SUMS.txt \
-            --target "$VALIDATED_SHA" --prerelease --latest=false \
+            --target "$GITHUB_SHA" --prerelease --latest=false \
             --title 'Moonlight Enhanced — Liquid UI Preview 13 (Intel + Universal)' \
             --notes-file docs/LIQUID_UI_CHECKPOINT.md
           for old_tag in liquid-ui-preview-3 liquid-ui-preview-7; do

@@ -3,7 +3,7 @@
 Branch: `liquid-ui` only. Manual Build 21 / `master` baseline: `1e625482bc9e4d3d86007334bb632fe0faa5d2ad`, unchanged. Do not merge UI changes into master or restore discarded customizations.
 
 ## Corrected application
-Validated commit: `b36e9b181d2adb21f9bc45f44a28718243225d0f`.
+Validated application/test commit: `b36e9b181d2adb21f9bc45f44a28718243225d0f`. The release tag includes subsequent publication metadata; its application sources are verified identical to this commit.
 - Floating streaming handle uses declarative icon constraints instead of resizing NSImageView inside layout(), which caused the reported Tahoe AppKit display-cycle exception.
 - Collection count callbacks only return counts; empty-state view updates occur in controller refresh paths.
 - Offline overlays fully honor Reduce Motion.
