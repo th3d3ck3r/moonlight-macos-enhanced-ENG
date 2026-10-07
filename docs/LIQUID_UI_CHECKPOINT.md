@@ -10,12 +10,14 @@ UI-only branch: `liquid-ui`. Functional baseline: `1e625482bc9e4d3d86007334bb632
 - Diagnostics use semantic colors and native settings buttons; connection detail cards refresh dynamic appearance. About identifies the preview and retains the manual update notice.
 - Native alerts, pairing sheets, connection editor, computer cards, game library and all five Settings panes retain their controllers, outlets and standard controls. Readable content and streaming video are not wrapped in glass.
 
-## Validation
-Foundation commit: `68d9b280d2e49cf6b956bc66826d79fbfa897e42`.
-Foundation full x86_64 and Universal builds passed in run 37567534610, including common-c sanitizer, host-response, credential-redaction and packaged-app audits. Initial preview commit `7b99ed420a0abf3156b946a6f5f3dde731b03152` passed both full builds in run 37568059854. Actual captures exposed off-screen Settings placement and left-aligned empty-state text; both have been corrected. Revalidation is pending.
-Local English/LAN and update-isolation audits pass; storyboard/XIB XML parses and diff whitespace checks pass. No new project references, settings keys, bundle identity, signing or permission changes. No networking, common-c, decoding, input capture or renderer changes.
-Dedicated branch CI builds full x86_64 and Universal apps, runs common-c sanitizer, host-response and credential-redaction tests, audits packaged apps and verifies application/helper binary slices. Publication must follow actual screenshot inspection and use only validated build artifacts. It is a prerelease and cannot replace the latest Manual release.
-Runner screenshots are attempted separately and may be blocked by GUI permissions. Smoke captures do not establish comprehensive physical testing. Chat concept imagery is a mockup.
+## Validation and preview
+Validated application commit: `ede92a8dd00b24f6a442b6f62b4759f1a4b2e8c2`.
+Both full x86_64 and Universal jobs passed in [run 37569705649](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37569705649). Checks include common-c ASAN/UBSAN tests, native host XML security/compatibility, credential redaction, full Xcode builds, packaged English/manual-update audits and application/AWDL helper architecture verification.
+Local English/LAN and update-isolation audits, storyboard/XIB XML parsing and diff whitespace checks passed. No changes to project references, settings keys/defaults, bundle identity, signing, Local Network permissions, networking, common-c, decoding, input capture or renderer architecture.
+
+Actual hosted Tahoe captures were reviewed: main window light/dark, Stream/Video/Audio/Input/App Settings and dark App Settings. Settings fits the display, pane navigation and native selection contrast work, and “Match System” follows OS appearance. See [actual screenshots](../readme-assets/liquid-ui-actual/). The earlier chat concept image is a mockup. Captures do not establish exhaustive lower-content, host-dependent or physical Intel testing.
+
+Liquid UI Preview 7 publishes only artifacts from the successful run above, as a prerelease, without replacing Manual Build 21. Preview 3 is superseded after correcting Settings placement and empty-state alignment found during screenshot review. Publication metadata and screenshots do not alter the validated application sources.
 
 ## Physical Intel Tahoe checklist
 - Pair/stream with Sunshine or Vibepollo; confirm Local Network authorization, H.264/HEVC, VideoToolbox, optional HDR, audio/microphone and clipboard.
@@ -25,4 +27,4 @@ Runner screenshots are attempted separately and may be blocked by GUI permission
 - Resize, fullscreen and move across displays; check floating handle/menu interactions and mouse capture.
 - Compare CPU/GPU/frame pacing with Manual Build 21, overlays hidden/visible. Compilation does not verify Intel runtime performance or working pairing/streaming.
 
-Next: resolve build failures, inspect captured screens where available and publish after mandatory automated checks pass. Exhaustive visual inspection and live-host performance remain physical testing tasks.
+Next: perform the physical checklist above. No live pairing/streaming, CPU/GPU/frame-pacing comparison, multiple-display testing or physical Intel runtime testing was available. Future publication must update the validated run/SHA and review new captures after relevant source changes.

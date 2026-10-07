@@ -1,0 +1,55 @@
+name: Publish Reviewed Liquid UI Preview
+on:
+  push:
+    branches: [liquid-ui]
+permissions:
+  contents: read
+jobs:
+  publish:
+    if: contains(github.event.head_commit.message, '[validated-liquid-preview]')
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: write
+    env:
+      VALIDATED_RUN_ID: '37569705649'
+      VALIDATED_SHA: 'ede92a8dd00b24f6a442b6f62b4759f1a4b2e8c2'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Verify reviewed build and unchanged application sources
+        run: |
+          gh api "repos/${{ github.repository }}/actions/runs/$VALIDATED_RUN_ID" > validated-run.json
+          gh api "repos/${{ github.repository }}/actions/runs/$VALIDATED_RUN_ID/jobs" > validated-jobs.json
+          python3 <<'PY'
+          import json, os, subprocess
+          run = json.load(open('validated-run.json'))
+          assert run['conclusion'] == 'success'
+          assert run['head_branch'] == 'liquid-ui'
+          assert run['head_sha'] == os.environ['VALIDATED_SHA']
+          jobs = json.load(open('validated-jobs.json'))['jobs']
+          for name in ['Liquid UI macOS x86_64', 'Liquid UI macOS universal']:
+              assert any(j['name'] == name and j['conclusion'] == 'success' for j in jobs)
+          paths = subprocess.check_output(['git', 'diff', '--name-only', os.environ['VALIDATED_SHA'], 'HEAD'], text=True).splitlines()
+          assert all(p in ['docs/LIQUID_UI_CHECKPOINT.md', '.github/workflows/liquid-ui-publish.yml'] or p.startswith('readme-assets/liquid-ui-actual/') for p in paths), paths
+          PY
+      - uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ env.VALIDATED_RUN_ID }}
+          pattern: native-manual-*
+          path: release-artifacts
+      - name: Publish reviewed Intel and Universal packages
+        run: |
+          mkdir -p downloads
+          cp release-artifacts/native-manual-x86_64/Moonlight-manual-x86_64.zip downloads/Moonlight-Liquid-UI-x86_64.zip
+          cp release-artifacts/native-manual-universal/Moonlight-manual-universal.zip downloads/Moonlight-Liquid-UI-Universal.zip
+          (cd downloads && sha256sum *.zip > SHA256SUMS.txt)
+          gh release create liquid-ui-preview-7 downloads/*.zip downloads/SHA256SUMS.txt \
+            --target "$VALIDATED_SHA" --prerelease --latest=false \
+            --title 'Moonlight Enhanced — Liquid UI Preview 7 (Intel + Universal)' \
+            --notes-file docs/LIQUID_UI_CHECKPOINT.md
+          gh release edit liquid-ui-preview-3 --prerelease --latest=false \
+            --notes 'Superseded by Liquid UI Preview 7, which corrects Settings window placement and empty-state alignment discovered in actual Tahoe screenshots. Use Preview 7 for testing. The English Manual Build 21 baseline remains unchanged.'
