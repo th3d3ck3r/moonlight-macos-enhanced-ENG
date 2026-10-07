@@ -69,6 +69,7 @@
     self.hosts = [NSArray array];
     
     [self prepareDiscovery];
+    [self refreshEmptyState];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(languageChanged:) name:@"LanguageChanged" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(refreshHostDiscovery:) name:@"MoonlightRequestHostDiscovery" object:nil];
@@ -83,6 +84,7 @@
 - (void)languageChanged:(NSNotification *)note {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.getSearchField.placeholderString = NSLocalizedString(@"Search Hosts", @"Search Hosts");
+        [self refreshEmptyState];
         [self.collectionView reloadData];
     });
 }
@@ -357,11 +359,6 @@
 }
 
 - (NSInteger)collectionView:(nonnull NSCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    BOOL searching = self.getSearchField.stringValue.length > 0;
-    [MLCollectionEmptyState updateInView:self.view empty:self.hosts.count == 0
-                                  title:searching ? @"No matching computers" : @"Connect to a computer"
-                                 detail:searching ? @"Try a different search." : @"Computers on your local network appear here. Use the + button to add an address manually."
-                                 symbol:@"desktopcomputer"];
     return self.hosts.count;
 }
 
@@ -538,6 +535,14 @@
 }
 
 
+- (void)refreshEmptyState {
+    BOOL searching = self.getSearchField.stringValue.length > 0;
+    [MLCollectionEmptyState updateInView:self.view empty:self.hosts.count == 0
+                                  title:searching ? @"No matching computers" : @"Connect to a computer"
+                                 detail:searching ? @"Try a different search." : @"Computers on your local network appear here. Use the + button to add an address manually."
+                                 symbol:@"desktopcomputer"];
+}
+
 #pragma mark - Host Discovery
 
 - (void)prepareDiscovery {
@@ -578,6 +583,7 @@
         // Sort the host list in alphabetical order
         self.hosts = [self.hosts sortedArrayUsingSelector:@selector(compareName:)];
         self.hostList = self.hosts;
+        [self refreshEmptyState];
         [self.collectionView moonlight_reloadDataKeepingSelection];
     }
 }
@@ -595,6 +601,7 @@
     NSArray<TemporaryHost *> *filteredHosts = [self.hostList filteredArrayUsingPredicate:predicate];
     self.hosts = [filteredHosts sortedArrayUsingSelector:@selector(compareName:)];
 
+    [self refreshEmptyState];
     [self.collectionView reloadData];
 }
 

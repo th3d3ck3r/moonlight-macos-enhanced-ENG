@@ -169,6 +169,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
 - (void)languageChanged:(NSNotification *)note {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.getSearchField.placeholderString = NSLocalizedString(@"Search Apps", @"Search Apps");
+        [self refreshEmptyState];
         [self.collectionView reloadData];
     });
 }
@@ -217,6 +218,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
 }
 
 - (void)updateOfflineOverlayForCurrentHost {
+    [self refreshEmptyState];
     StreamingSessionManager *manager = [StreamingSessionManager shared];
     BOOL isStreamingThisHost = (self.host.uuid != nil) && [manager isStreamingHost:self.host.uuid];
 
@@ -493,6 +495,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
     // Clear current state
     self.apps = @[];
     self.runningApp = nil;
+    [self refreshEmptyState];
     [self.collectionView reloadData];
     [self.boxArtCache removeAllObjects];
 
@@ -767,10 +770,6 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
 }
 
 - (NSInteger)collectionView:(nonnull NSCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    [MLCollectionEmptyState updateInView:self.view empty:self.apps.count == 0 && self.host.state == StateOnline
-                                  title:@"No apps to display"
-                                 detail:@"Wait for the computer’s app list, or try a different search."
-                                 symbol:@"square.grid.2x2"];
     return [self itemsForSection:section].count;
 }
 
@@ -800,6 +799,7 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
 - (void)controlTextDidChange:(NSNotification *)obj {
     self.filterText = ((NSTextField *)obj.object).stringValue;
     [self displayApps];
+    [self refreshEmptyState];
     [self.collectionView reloadData];
 }
 
@@ -1453,6 +1453,7 @@ static const CGFloat runningAnimationDuration = 1.0;
     
     if (deletions.count != 0 || insertions.count != 0) {
         self.apps = [self fetchApps];
+        [self refreshEmptyState];
         
         [self.collectionView.animator performBatchUpdates:^{
             [self.collectionView deleteItemsAtIndexPaths:deletions];
@@ -1529,8 +1530,16 @@ static const CGFloat runningAnimationDuration = 1.0;
     return [hiddenAwareApps sortedArrayUsingSelector:@selector(compare:)];
 }
 
+- (void)refreshEmptyState {
+    [MLCollectionEmptyState updateInView:self.view empty:self.apps.count == 0 && self.host.state == StateOnline
+                                  title:@"No apps to display"
+                                 detail:@"Wait for the computer’s app list, or try a different search."
+                                 symbol:@"square.grid.2x2"];
+}
+
 - (void)displayApps {
     self.apps = [self fetchApps];
+    [self refreshEmptyState];
 }
 
 - (void)discoverAppsForHost:(TemporaryHost *)host {
