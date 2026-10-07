@@ -28,14 +28,14 @@ Built with the protocol core used by **Moonlight PC v6.2.0 — the latest offici
 
 | Your Mac | Download |
 |---|---|
-| **Intel — recommended for Intel Macs** | [Moonlight-x86_64.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-rebuild-5/Moonlight-x86_64.zip) |
-| **Intel + Apple Silicon** | [Moonlight-universal.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-rebuild-5/Moonlight-universal.zip) |
+| **Intel — recommended for Intel Macs** | [Moonlight-x86_64.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-rebuild-17/Moonlight-x86_64.zip) |
+| **Intel + Apple Silicon** | [Moonlight-universal.zip](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/download/native-6.2-rebuild-17/Moonlight-universal.zip) |
 
-[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-5) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/REBUILD_SHA256SUMS.txt)
+[Release notes](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-17) · [All releases](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases) · [SHA-256 checksums](docs/REBUILD_SHA256SUMS.txt)
 
 > These packages are not Developer ID signed or notarized. macOS may require **System Settings → Privacy & Security → Open Anyway**. Privileged AWDL helper authorization has not been validated with a Developer ID signature.
 
-**Separate manual-update-only build:** [Intel and Universal downloads](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-1). It labels manual updates in About, uses this fork’s repository links, and audits packages for updater/feed components. The clean baseline already had no automatic app updater. Choose one Moonlight.app package when installing.
+**Separate manual-update-only build:** [Intel and Universal downloads](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-4). It labels manual updates in About, uses this fork’s repository links, and audits packages for updater/feed components. The clean baseline already had no automatic app updater. Choose one Moonlight.app package when installing.
 
 ## ✨ Features
 
@@ -101,11 +101,11 @@ A native Tahoe UI refresh is planned: polished Settings, clearer sidebars/toolba
 
 ## 🧪 Validation
 
-The detailed [integration report](docs/MOONLIGHT_6_2_REBUILD.md) records exact upstream commits, conflict resolutions, selected native ports, exclusions, build results, warnings and the [Intel Tahoe test checklist](docs/MOONLIGHT_6_2_REBUILD.md#intel-tahoe-test-checklist).
+The [latest code-review report](docs/CODE_REVIEW_2026_10_06.md) records the follow-up fixes and test limits. The detailed [integration report](docs/MOONLIGHT_6_2_REBUILD.md) records exact upstream commits, conflict resolutions, selected native ports, exclusions, build results, warnings and the [Intel Tahoe test checklist](docs/MOONLIGHT_6_2_REBUILD.md#intel-tahoe-test-checklist).
 
-**Intel-only and Universal full builds passed** in [the release validation run](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37528656903). The Intel package was cross-compiled with an explicit x86_64 target on the Tahoe Apple Silicon runner; physical Intel streaming remains untested.
+**Intel-only and Universal full builds passed** in [the release validation run](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/actions/runs/37545875198). The Intel package was cross-compiled with an explicit x86_64 target on the Tahoe Apple Silicon runner; physical Intel streaming remains untested.
 
-Automated checks cover full Intel/Universal application builds, executable/helper architecture checks, recursive submodule checkout, English/LAN bundle declarations, common-c FEC/crypto/input boundaries, and the production host XML parsers.
+Automated checks cover full Intel/Universal application builds, executable/helper architecture checks, recursive submodule checkout, English/LAN bundle declarations, common-c FEC/crypto/input boundaries, production host XML and logger redaction tests, RTSP malformed-input tests, and production clipboard receive tests.
 
 **Physical Mac tests remain:** permission prompts, discovery/pairing, real app lists, stream startup/shutdown/reconnect, hardware decoding, pacing/color/HDR, input/controller, audio, microphone, clipboard and settings persistence. Passing a build does not certify those behaviors.
 
