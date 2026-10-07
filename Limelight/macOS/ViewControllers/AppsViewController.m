@@ -767,6 +767,10 @@ static NSUserInterfaceItemIdentifier const MLSunshineRefreshDisplaysMenuItemIden
 }
 
 - (NSInteger)collectionView:(nonnull NSCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    [MLCollectionEmptyState updateInView:self.view empty:self.apps.count == 0 && self.host.state == StateOnline
+                                  title:@"No apps to display"
+                                 detail:@"Wait for the computer’s app list, or try a different search."
+                                 symbol:@"square.grid.2x2"];
     return [self itemsForSection:section].count;
 }
 

@@ -76,6 +76,21 @@ static NSString * const MoonlightSearchToolbarItemIdentifier = @"NewSearchToolba
     window.titlebarSeparatorStyle = NSTitlebarSeparatorStyleAutomatic;
     NSToolbar *toolbar = window.toolbar;
     toolbar.delegate = self;
+    NSDictionary<NSString *, NSString *> *symbols = @{
+        @"BackToolbarItem": @"chevron.backward",
+        @"AddHostToolbarItem": @"plus",
+        @"PreferencesToolbarItem": @"gearshape"
+    };
+    for (NSToolbarItem *item in toolbar.items) {
+        NSString *symbol = symbols[item.itemIdentifier];
+        if (symbol != nil) {
+            NSImage *image = [NSImage imageWithSystemSymbolName:symbol accessibilityDescription:item.label];
+            item.image = image;
+            if ([item.view isKindOfClass:NSButton.class]) {
+                ((NSButton *)item.view).image = image;
+            }
+        }
+    }
 
     if ([window moonlight_toolbarItemForIdentifier:MoonlightSidebarToggleToolbarItemIdentifier] == nil) {
         [toolbar insertItemWithItemIdentifier:MoonlightSidebarToggleToolbarItemIdentifier atIndex:1];

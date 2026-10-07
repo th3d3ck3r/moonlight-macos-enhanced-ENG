@@ -130,3 +130,51 @@ private final class MoonlightMaterialBackground: NSView {
         }
     }
 }
+
+@objc(MLCollectionEmptyState) final class MLCollectionEmptyState: NSObject {
+    @objc(updateInView:empty:title:detail:symbol:)
+    static func update(in view: NSView, empty: Bool, title: String, detail: String, symbol: String) {
+        let identifier = NSUserInterfaceItemIdentifier("MoonlightCollectionEmptyState")
+        let previous = view.subviews.first { $0.identifier == identifier }
+        if !empty {
+            previous?.removeFromSuperview()
+            return
+        }
+        let label: NSTextField
+        if let previous = previous as? NSTextField {
+            label = previous
+        } else {
+            label = NSTextField(wrappingLabelWithString: "")
+            label.identifier = identifier
+            label.alignment = .center
+            label.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview(label)
+            NSLayoutConstraint.activate([
+                label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                label.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                label.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, multiplier: 0.8),
+                label.widthAnchor.constraint(lessThanOrEqualToConstant: 360)
+            ])
+        }
+        let text = NSMutableAttributedString(string: title + "\n\n", attributes: [
+            .font: NSFont.systemFont(ofSize: 20, weight: .semibold),
+            .foregroundColor: NSColor.labelColor
+        ])
+        text.append(NSAttributedString(string: detail, attributes: [
+            .font: NSFont.systemFont(ofSize: NSFont.systemFontSize),
+            .foregroundColor: NSColor.secondaryLabelColor
+        ]))
+        if let image = NSImage(systemSymbolName: symbol, accessibilityDescription: nil) {
+            image.size = NSSize(width: 32, height: 32)
+            let attachment = NSTextAttachment()
+            attachment.image = image
+            let heading = NSMutableAttributedString(attachment: attachment)
+            heading.append(NSAttributedString(string: "\n\n"))
+            heading.append(text)
+            label.attributedStringValue = heading
+        } else {
+            label.attributedStringValue = text
+        }
+        label.setAccessibilityLabel(title + ". " + detail)
+    }
+}

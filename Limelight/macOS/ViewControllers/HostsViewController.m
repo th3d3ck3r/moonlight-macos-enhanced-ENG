@@ -357,6 +357,11 @@
 }
 
 - (NSInteger)collectionView:(nonnull NSCollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    BOOL searching = self.getSearchField.stringValue.length > 0;
+    [MLCollectionEmptyState updateInView:self.view empty:self.hosts.count == 0
+                                  title:searching ? @"No matching computers" : @"Connect to a computer"
+                                 detail:searching ? @"Try a different search." : @"Computers on your local network appear here. Use the + button to add an address manually."
+                                 symbol:@"desktopcomputer"];
     return self.hosts.count;
 }
 

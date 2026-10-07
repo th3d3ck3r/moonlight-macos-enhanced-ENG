@@ -244,15 +244,9 @@
             NSButton *btn = [[NSButton alloc] initWithFrame:NSMakeRect(0, 0, 90, 28)];
             btn.target = self;
             btn.action = selector;
-            btn.bezelStyle = NSBezelStyleRegularSquare;
-            btn.bordered = NO;
-            btn.wantsLayer = YES;
+            btn.bezelStyle = NSBezelStyleRounded;
+            btn.bordered = YES;
             // 使用更浅的背景色，区别于设置按钮
-            btn.layer.backgroundColor = [[NSColor colorWithWhite:1.0 alpha:0.06] CGColor];
-            btn.layer.cornerRadius = 6.0;
-            btn.layer.borderWidth = 0.5;
-            btn.layer.borderColor = [[NSColor colorWithWhite:1.0 alpha:0.15] CGColor];
-            btn.layer.masksToBounds = YES;
             
             btn.title = title;
             btn.font = [NSFont systemFontOfSize:11 weight:NSFontWeightMedium];
@@ -262,7 +256,7 @@
             if (@available(macOS 11.0, *)) {
                 btn.image = [NSImage imageWithSystemSymbolName:iconName accessibilityDescription:nil];
                 btn.imagePosition = NSImageLeading;
-                btn.contentTintColor = [NSColor colorWithWhite:0.75 alpha:1.0];
+                btn.contentTintColor = [NSColor secondaryLabelColor];
                 btn.imageHugsTitle = YES;
                 btn.alignment = NSTextAlignmentCenter;
             } else {

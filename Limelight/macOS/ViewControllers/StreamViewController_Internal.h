@@ -361,7 +361,7 @@ static const NSTimeInterval MLStatsOverlayRefreshIntervalSec = 0.5;
 
 @property (nonatomic, strong) NSMenu *streamMenu;
 
-@property (nonatomic, strong) NSVisualEffectView *controlCenterPill;
+@property (nonatomic, strong) NSView *controlCenterPill;
 @property (nonatomic, strong) NSImageView *controlCenterSignalImageView;
 @property (nonatomic, strong) NSTextField *controlCenterTimeLabel;
 @property (nonatomic, strong) NSTextField *controlCenterTitleLabel;
