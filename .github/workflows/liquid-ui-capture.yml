@@ -1,0 +1,97 @@
+name: Review Liquid UI Captures
+on:
+  push:
+    branches: [liquid-ui]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  capture:
+    if: contains(github.event.head_commit.message, '[liquid-capture-review]')
+    runs-on: macos-26
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ github.token }}
+          run-id: '37568589636'
+          name: native-manual-universal
+          path: package
+      - name: Extract validated Universal app
+        run: |
+          mkdir -p review
+          ditto -x -k package/Moonlight-manual-universal.zip review
+      - name: Inspect actual UI through native GUI actions
+        shell: bash
+        run: |
+          app=review/Moonlight.app
+          bundle=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app/Contents/Info.plist")
+          defaults write "$bundle" welcome.permissions.shown.v1 -bool true
+          open "$app"
+          sleep 5
+          osascript <<'APPLESCRIPT'
+          tell application "System Events"
+            repeat with candidateProcess in application processes
+              try
+                repeat with candidateWindow in windows of candidateProcess
+                  set permissionElements to entire contents of candidateWindow
+                  set permissionText to ""
+                  repeat with permissionElement in permissionElements
+                    try
+                      if class of permissionElement is static text then set permissionText to permissionText & (value of permissionElement as text)
+                    end try
+                  end repeat
+                  if permissionText contains "Moonlight" and permissionText contains "local network" then
+                    repeat with permissionElement in permissionElements
+                      try
+                        if class of permissionElement is button and name of permissionElement is "Allow" then click permissionElement
+                      end try
+                    end repeat
+                  end if
+                end repeat
+              end try
+            end repeat
+          end tell
+          APPLESCRIPT
+          sleep 2
+          osascript -e 'tell application "Moonlight" to activate'
+          mkdir -p screenshots
+          screencapture -x screenshots/main-window-actual.png
+          osascript -e 'tell application "System Events" to keystroke "," using command down'
+          sleep 2
+          screencapture -x screenshots/settings-actual.png
+          for pane in Video Audio Input App; do
+            osascript - "$pane" <<'APPLESCRIPT'
+          on run argv
+            tell application "System Events"
+              tell process "Moonlight"
+                set paneElements to entire contents of front window
+                repeat with paneElement in paneElements
+                  try
+                    if class of paneElement is static text and (value of paneElement as text) is item 1 of argv then
+                      click paneElement
+                      return
+                    end if
+                  end try
+                end repeat
+                error "Settings pane could not be selected"
+              end tell
+            end tell
+          end run
+          APPLESCRIPT
+            sleep 1
+            screencapture -x "screenshots/settings-$pane-actual.png"
+          done
+          osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to true'
+          sleep 2
+          screencapture -x screenshots/settings-dark-actual.png
+          osascript -e 'tell application "System Events" to keystroke "w" using command down'
+          sleep 1
+          screencapture -x screenshots/main-window-dark-actual.png
+          osascript -e 'tell application "System Events" to keystroke "q" using command down'
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: liquid-ui-reviewed-captures
+          path: screenshots/*.png
+          if-no-files-found: error
