@@ -21,6 +21,8 @@ class SettingsHostingController<RootView: View>: NSWindowController {
     window.styleMask = [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView]
     window.collectionBehavior = [.fullScreenNone]
     window.tabbingMode = .disallowed
+    window.toolbarStyle = .unified
+    window.titlebarSeparatorStyle = .automatic
     window.title = LanguageManager.shared.localize("Settings")
 
     self.init(window: window)
@@ -85,7 +87,7 @@ private struct WelcomePermissionsView: View {
 
         VStack(alignment: .leading, spacing: 8) {
           Text(languageManager.localize("Welcome to Moonlight macOS Enhanced"))
-            .font(.system(size: 28, weight: .semibold, design: .rounded))
+            .font(.system(size: 28, weight: .semibold, design: .default))
           Text(languageManager.localize("Welcome Permissions Subtitle"))
             .foregroundColor(.secondary)
 
@@ -324,6 +326,8 @@ final class WelcomePermissionsHostingController: NSWindowController, NSWindowDel
     window.styleMask = [.titled, .closable, .miniaturizable]
     window.collectionBehavior = [.fullScreenNone]
     window.tabbingMode = .disallowed
+    window.toolbarStyle = .unified
+    window.titlebarSeparatorStyle = .automatic
     window.title = LanguageManager.shared.localize("Permissions")
     window.isReleasedWhenClosed = false
 

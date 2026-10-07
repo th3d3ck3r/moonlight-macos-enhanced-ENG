@@ -216,14 +216,11 @@ struct PaneCellView: View {
 
     HStack(spacing: 6) {
       Image(systemName: pane.symbol)
-        .adaptiveForegroundColor(.white)
+        .adaptiveForegroundColor(.accentColor)
         .font(.callout)
         .frame(width: containerSize, height: containerSize)
         .padding(1)
-        .background(
-          RoundedRectangle(cornerRadius: 5, style: .continuous)
-            .foregroundColor(pane.color)
-        )
+
 
       Text(languageManager.localize(pane.title))
     }

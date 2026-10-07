@@ -43,13 +43,15 @@ struct StreamingLockOverlayView: View {
     let onShowWindow: () -> Void
     let onDisconnect: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @SwiftUI.State private var languageVersion = 0
 
     var body: some View {
         ZStack {
             // Frosted glass background
             Rectangle()
-                .fill(Material.ultraThinMaterial)
+                .fill(Color(nsColor: .windowBackgroundColor))
                 .ignoresSafeArea()
 
             // Central card
@@ -105,14 +107,11 @@ struct StreamingLockOverlayView: View {
             }
             .padding(32)
             .frame(width: 350)
-            .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Material.regular)
-            )
+            .moonlightNavigationGlass()
             .shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: 10) // Enhanced card shadow
             .id(languageVersion)
         }
-        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+        .transition(reduceMotion ? .identity : .opacity)
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("LanguageChanged"))) { _ in
             languageVersion += 1
         }
@@ -127,6 +126,8 @@ struct OfflineHostOverlayView: View {
     let onCancel: () -> Void
 
     @SwiftUI.State private var isWaking = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
     @SwiftUI.State private var languageVersion = 0
     @SwiftUI.State private var refreshRotation = 0.0
 
@@ -141,7 +142,7 @@ struct OfflineHostOverlayView: View {
         ZStack {
             // Frosted glass background
             Rectangle()
-                .fill(Material.ultraThinMaterial)
+                .fill(Color(nsColor: .windowBackgroundColor))
                 .ignoresSafeArea()
 
             // Central card
@@ -151,13 +152,13 @@ struct OfflineHostOverlayView: View {
                         .font(.system(size: 64))
                         .foregroundColor(.secondary)
                         .opacity(isWaking ? 0.5 : 1.0)
-                        .animation(isWaking ? Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default, value: isWaking)
+                        .animation(isWaking && !reduceMotion ? Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default, value: isWaking)
                     
                     if !isWaking {
                         // Refresh button overlay
                         Button(action: {
                             // Trigger refresh visual
-                            withAnimation(.linear(duration: 1)) {
+                            withAnimation(reduceMotion ? nil : .linear(duration: 1)) {
                                 refreshRotation += 360
                             }
                             onRefresh()
@@ -165,7 +166,7 @@ struct OfflineHostOverlayView: View {
                             Image(systemName: "arrow.clockwise.circle.fill")
                                 .font(.system(size: 24))
                                 .foregroundColor(.blue)
-                                .background(Circle().fill(Color.white).padding(2))
+                                .background(Circle().fill(Color(nsColor: .controlBackgroundColor)).padding(2))
                         }
                         .buttonStyle(.plain)
                         .offset(x: 24, y: 24)

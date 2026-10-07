@@ -86,10 +86,13 @@ struct HostRowView: View {
                 .fill(host.statusColor)
                 .frame(width: 8, height: 8)
 
-            // Host name
-            Text(host.name)
-                .lineLimit(1)
-                .font(.body)
+            Image(systemName: "desktopcomputer")
+                .foregroundColor(.secondary)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(host.name).lineLimit(1).font(.body)
+                Text(host.statusDescription).font(.caption).foregroundColor(.secondary)
+            }
 
             Spacer()
 
@@ -105,6 +108,15 @@ struct HostRowView: View {
 }
 
 extension HostDisplayModel {
+    var statusDescription: String {
+        if isStreaming { return "Streaming" }
+        switch state {
+        case .online: return pairState == .paired ? "Ready to stream" : "Not paired"
+        case .offline: return "Offline"
+        case .unknown: return "Checking availability"
+        }
+    }
+
     var statusColor: Color {
         // According to HostCell.m logic:
         // Online + Paired -> Green

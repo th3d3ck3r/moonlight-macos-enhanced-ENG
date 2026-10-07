@@ -43,7 +43,7 @@ struct StreamRiskSummarySection: View {
             Text(languageManager.localize("Profile Level"))
             Spacer()
             Text(assessment.riskLabel)
-              .font(.system(.body, design: .rounded).weight(.semibold))
+              .font(.system(.body, design: .default).weight(.semibold))
               .foregroundColor(riskColor)
           }
 
@@ -377,7 +377,7 @@ struct FormSection<Content: View>: View {
   var body: some View {
     GroupBox(
       content: {
-        VStack {
+        VStack(alignment: .leading, spacing: 12) {
           Group {
             content
           }
@@ -389,7 +389,7 @@ struct FormSection<Content: View>: View {
       label: {
         Text(languageManager.localize(title))
           .font(
-            .system(.body, design: .rounded)
+            .system(.body, design: .default)
               .weight(.semibold)
           )
           .padding(.bottom, 6)
@@ -1029,7 +1029,7 @@ private struct ShortcutTokenRowView: View {
       ForEach(Array(tokens.enumerated()), id: \.offset) { index, key in
         if index > 0 {
           Text("+")
-            .font(.system(size: 12, weight: .semibold, design: .rounded))
+            .font(.system(size: 12, weight: .semibold, design: .default))
             .foregroundColor(.secondary)
         }
 

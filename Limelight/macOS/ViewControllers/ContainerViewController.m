@@ -71,6 +71,9 @@ static NSString * const MoonlightSearchToolbarItemIdentifier = @"NewSearchToolba
     [super viewWillAppear];
     
     NSWindow *window = [Helpers getMainWindow];
+    // Standard toolbar chrome adopts Tahoe materials without covering content.
+    window.toolbarStyle = NSWindowToolbarStyleUnified;
+    window.titlebarSeparatorStyle = NSTitlebarSeparatorStyleAutomatic;
     NSToolbar *toolbar = window.toolbar;
     toolbar.delegate = self;
 
