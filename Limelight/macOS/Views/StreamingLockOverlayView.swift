@@ -150,7 +150,7 @@ struct OfflineHostOverlayView: View {
                         .font(.system(size: 64))
                         .foregroundColor(.secondary)
                         .opacity(isWaking ? 0.5 : 1.0)
-                        .animation(isWaking && !reduceMotion ? Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default, value: isWaking)
+                        .animation(reduceMotion ? nil : (isWaking ? Animation.easeInOut(duration: 1.0).repeatForever(autoreverses: true) : .default), value: isWaking)
                     
                     if !isWaking {
                         // Refresh button overlay
@@ -233,7 +233,7 @@ struct OfflineHostOverlayView: View {
             )
             .id(languageVersion)
         }
-        .transition(.opacity)
+        .transition(reduceMotion ? .identity : .opacity)
         .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("LanguageChanged"))) { _ in
             languageVersion += 1
         }
