@@ -10,9 +10,11 @@ Every release below contains an Intel-only x86_64 ZIP and a Universal x86_64 + a
 | 4 | [Manual build 2](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-2) | Manual updates | Corresponding review fixes |
 | 5 | [Build 15](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-15) | Standard | Clipboard completion validation and active test assertions |
 | 6 | **[Build 17](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-rebuild-17)** | Standard | All review fixes, including explicit pairing-certificate ownership |
-| 7 | **[Manual build 4 — Latest](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-4)** | Manual updates | Same final fixes with the manual-update policy |
+| 7 | **[Manual build 4](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-4)** | Manual updates | Same final fixes with the manual-update policy |
 
-GitHub's Latest badge now points to Manual Build 4. Standard Build 17 remains a historical release. Both contain the same reviewed streaming/protocol fixes. Use one Moonlight.app package when installing.
+| 8 | **[Manual build 21 — Latest](https://github.com/th3d3ck3r/moonlight-macos-enhanced-ENG/releases/tag/native-6.2-manual-21)** | Manual updates | Consolidated master, maintained main-page links, full Intel/Universal validation |
+
+GitHub's Latest badge now points to Manual Build 21. Standard Build 17 remains a historical release. Both contain the same reviewed streaming/protocol fixes. Use one Moonlight.app package when installing.
 
 This index orders releases by their original publication times. Older Moonmac-Vibe releases predate the clean rebuild and are not part of this series. GitHub controls the ordering of its releases page; this index provides a stable chronological list.
 

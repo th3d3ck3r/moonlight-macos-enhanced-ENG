@@ -1,0 +1,95 @@
+name: Publish Validated Consolidated Manual Build
+on:
+  push:
+    branches: [master]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  publish:
+    if: contains(github.event.head_commit.message, '[publish-consolidated]')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Require successful validation of exact application source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh api repos/$GH_REPO/actions/runs/37563407960/jobs --jq '[.jobs[] | select(.name | startswith("Manual macOS")) | .conclusion] | length == 2 and all(. == "success")' | grep -qx true
+          test "$(gh api repos/$GH_REPO/actions/runs/37563407960 --jq '.head_sha')" = 4e5b3ec78c6b6227c50bdc9ac7da198d782cf7bc
+          git diff --exit-code 4e5b3ec78c6b6227c50bdc9ac7da198d782cf7bc HEAD -- Limelight Moonlight.xcodeproj moonlight-common .gitmodules scripts tests
+      - uses: actions/download-artifact@v8
+        with:
+          run-id: 37563407960
+          github-token: ${{ github.token }}
+          pattern: native-manual-*
+          path: release-artifacts
+      - name: Publish validated Manual Build 21
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          intel=release-artifacts/native-manual-x86_64/Moonlight-manual-x86_64.zip
+          universal=release-artifacts/native-manual-universal/Moonlight-manual-universal.zip
+          test -s "$intel"
+          test -s "$universal"
+          sha256sum "$intel" "$universal" | sed 's|release-artifacts/native-manual-[^/]*/||' > SHA256SUMS.txt
+          cat SHA256SUMS.txt
+          cp docs/CONSOLIDATED_RELEASE_NOTES.md release-notes.md
+          printf '\n### SHA-256\n\n```text\n' >> release-notes.md
+          cat SHA256SUMS.txt >> release-notes.md
+          printf '```\n' >> release-notes.md
+          gh release create native-6.2-manual-21 "$intel" "$universal" SHA256SUMS.txt \
+            --target 4e5b3ec78c6b6227c50bdc9ac7da198d782cf7bc --latest \
+            --title 'Moonlight Enhanced English — Manual Build 21' \
+            --notes-file release-notes.md
+          test "$(gh api repos/$GH_REPO/releases/latest --jq '.tag_name')" = native-6.2-manual-21
+      - name: Archive and remove extra branches without losing history
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          branches=(
+            'rebuild-moonlight-6.2-english'
+            'rebuild-moonlight-6.2-english-manual'
+            'codex/crimson-vibepollo-stats'
+            'codex/vibepollo-discovery'
+          )
+          expected=(
+            'ab03958a60edf4fc644c881382072aeef4677298'
+            '328ea83b8e6856668b63930f8a6e6c1b64776102'
+            '6691a9d84fa59325ef8605a999ee0a8e10b96a34'
+            'f03fb401876108870b09f5dfd6dd45c74f00dbb3'
+          )
+          # Archive every tip before deleting anything. A changed branch stops cleanup.
+          for i in "${!branches[@]}"; do
+            branch="${branches[$i]}"
+            sha="${expected[$i]}"
+            actual=$(gh api "repos/$GH_REPO/git/ref/heads/$branch" --jq '.object.sha')
+            echo "Checking $branch: $actual (expected $sha)"
+            test "$actual" = "$sha"
+            tag="archive/2026-10-06/$branch"
+            if archived=$(gh api "repos/$GH_REPO/git/ref/tags/$tag" --jq '.object.sha' 2>/dev/null); then
+              test "$archived" = "$sha"
+            else
+              gh api --method POST "repos/$GH_REPO/git/refs" -f ref="refs/tags/$tag" -f sha="$sha"
+            fi
+          done
+          for i in "${!branches[@]}"; do
+            branch="${branches[$i]}"
+            actual=$(gh api "repos/$GH_REPO/git/ref/heads/$branch" --jq '.object.sha')
+            test "$actual" = "${expected[$i]}"
+            gh api --method DELETE "repos/$GH_REPO/git/refs/heads/$branch"
+          done
+          gh api "repos/$GH_REPO/branches" --jq '.[].name'
