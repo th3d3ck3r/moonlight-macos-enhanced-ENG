@@ -53,6 +53,18 @@ jobs:
             end repeat
           end tell
           APPLESCRIPT
+          # Coordinate fallback is grounded in the captured 1024x768 runner
+          # permission dialog. A click on empty content is harmless if dismissed.
+          swift - <<'SWIFT'
+          import CoreGraphics
+          let display = CGMainDisplayID()
+          guard CGDisplayPixelsWide(display) == 1024 && CGDisplayPixelsHigh(display) == 768 else {
+              fatalError("Runner display changed; review permission-dialog coordinates")
+          }
+          let point = CGPoint(x: 572, y: 339)
+          CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+          CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: point, mouseButton: .left)?.post(tap: .cghidEventTap)
+          SWIFT
           sleep 2
           osascript -e 'tell application "Moonlight" to activate'
           mkdir -p screenshots
@@ -72,6 +84,11 @@ jobs:
                       click paneElement
                       return
                     end if
+                  end try
+                end repeat
+                repeat with paneElement in paneElements
+                  try
+                    log ((class of paneElement as text) & " | " & (name of paneElement as text) & " | " & (value of paneElement as text))
                   end try
                 end repeat
                 error "Settings pane could not be selected"
